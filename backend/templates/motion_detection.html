@@ -1,0 +1,912 @@
+{% extends "base.html" %}
+
+{% block title %}Motion Detection - Smart Grocery + Recipe Planner{% endblock %}
+
+{% block content %}
+<div class="motion-detection-bg" style="margin: 0; padding: 2rem 0;">
+    <div class="container">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-white floating">
+                <i class="fas fa-video me-3"></i>
+                Motion Detection
+            </h1>
+            <p class="lead text-white opacity-75">Real-time motion detection using computer vision</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="row g-4">
+                <!-- Camera Control Panel -->
+                <div class="col-lg-4">
+                    <div class="card glass">
+                        <div class="card-header">
+                            <h5><i class="fas fa-cog me-2"></i>Camera Controls</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Camera Selection -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-camera me-2 text-primary"></i>Camera Source
+                                </label>
+                                <select class="form-select" id="camera_source">
+                                    <option value="0">Default Camera</option>
+                                    <option value="1">External Camera</option>
+                                    <option value="upload">Upload Video File</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Video Upload -->
+                            <div class="mb-4" id="video_upload_section" style="display: none;">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-upload me-2 text-info"></i>Upload Video
+                                </label>
+                                <input type="file" class="form-control" id="video_file" accept="video/*">
+                            </div>
+                            
+                            <!-- Motion Sensitivity -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-adjust me-2 text-warning"></i>Motion Sensitivity
+                                </label>
+                                <input type="range" class="form-range" id="sensitivity" 
+                                       min="1" max="10" value="5" oninput="updateSensitivity(this.value)">
+                                <div class="d-flex justify-content-between">
+                                    <small>Low</small>
+                                    <small id="sensitivity_value">5</small>
+                                    <small>High</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Detection Mode -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-eye me-2 text-success"></i>Detection Mode
+                                </label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="detection_mode" 
+                                           id="motion_only" value="motion" checked>
+                                    <label class="form-check-label" for="motion_only">Motion Only</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="detection_mode" 
+                                           id="people_detection" value="people">
+                                    <label class="form-check-label" for="people_detection">People Detection</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="detection_mode" 
+                                           id="object_detection" value="objects">
+                                    <label class="form-check-label" for="object_detection">Object Detection</label>
+                                </div>
+                            </div>
+                            
+                            <!-- Recording Options -->
+                            <div class="mb-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="save_recording">
+                                    <label class="form-check-label" for="save_recording">
+                                        <i class="fas fa-save me-2"></i>Save Recording
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="motion_alerts" checked>
+                                    <label class="form-check-label" for="motion_alerts">
+                                        <i class="fas fa-bell me-2"></i>Motion Alerts
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="debug_mode">
+                                    <label class="form-check-label" for="debug_mode">
+                                        <i class="fas fa-bug me-2"></i>Debug Mode
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Control Buttons -->
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-success" id="start_camera" onclick="startCamera()">
+                                    <i class="fas fa-play me-2"></i>Start Camera
+                                </button>
+                                <button class="btn btn-danger" id="stop_camera" onclick="stopCamera()" disabled>
+                                    <i class="fas fa-stop me-2"></i>Stop Camera
+                                </button>
+                                <button class="btn btn-warning" id="capture_frame" onclick="captureFrame()" disabled>
+                                    <i class="fas fa-camera me-2"></i>Capture Frame
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Motion Statistics -->
+                    <div class="card glass mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-bar me-2"></i>Detection Stats</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center g-3">
+                                <div class="col-6">
+                                    <div class="card border-0 glass">
+                                        <div class="card-body py-2">
+                                            <h4 id="motion_count" class="text-primary">0</h4>
+                                            <small>Motion Events</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card border-0 glass">
+                                        <div class="card-body py-2">
+                                            <h4 id="people_count" class="text-success">0</h4>
+                                            <small>People Detected</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="card border-0 glass">
+                                        <div class="card-body py-2">
+                                            <h6 id="session_time" class="text-info">00:00</h6>
+                                            <small>Session Time</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Video Display Panel -->
+                <div class="col-lg-8">
+                    <div class="card glass">
+                        <div class="card-header">
+                            <h5><i class="fas fa-desktop me-2"></i>Video Feed</h5>
+                            <div class="float-end">
+                                <span class="badge bg-secondary" id="status_badge">Stopped</span>
+                            </div>
+                        </div>
+                        <div class="card-body text-center">
+                            <div id="video_container" style="min-height: 400px; position: relative; background: #000; border-radius: 15px; overflow: hidden;">
+                                <div id="placeholder" class="d-flex align-items-center justify-content-center h-100" style="min-height: 400px;">
+                                    <div class="text-center">
+                                        <i class="fas fa-video-slash text-muted floating" style="font-size: 4rem;"></i>
+                                        <h5 class="mt-3 text-muted">Camera Not Started</h5>
+                                        <p class="text-muted">Click "Start Camera" to begin motion detection</p>
+                                        <small class="text-muted">Make sure to allow camera permissions</small>
+                                    </div>
+                                </div>
+                                <video id="video_feed" style="display: none; width: 100%; height: auto; border-radius: 15px;" autoplay muted playsinline></video>
+                                <canvas id="detection_canvas" style="display: none; position: absolute; top: 0; left: 0; pointer-events: none; border-radius: 15px;"></canvas>
+                                
+                                <!-- Debug Info Overlay -->
+                                <div id="debug_info" style="position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px; display: none;">
+                                    <div>Resolution: <span id="video_resolution">-</span></div>
+                                    <div>FPS: <span id="fps_counter">-</span></div>
+                                    <div>Motion: <span id="motion_status">Waiting...</span></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Motion Detection Overlay -->
+                            <div id="motion_overlay" style="display: none; position: absolute; top: 10px; left: 10px; z-index: 10;">
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>Motion Detected!</strong> Movement in frame.
+                                    <button type="button" class="btn-close" onclick="hideMotionAlert()"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Captured Frames -->
+                    <div class="card glass mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-images me-2"></i>Captured Frames</h5>
+                            <button class="btn btn-sm btn-outline-light float-end" onclick="clearFrames()">
+                                <i class="fas fa-trash me-1"></i>Clear All
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="captured_frames" class="row g-2">
+                                <div class="col-12 text-center text-muted">
+                                    <i class="fas fa-camera" style="font-size: 2rem;"></i>
+                                    <p class="mt-2">No frames captured yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let videoStream = null;
+    let isDetecting = false;
+    let motionCount = 0;
+    let peopleCount = 0;
+    let sessionStartTime = null;
+    let sessionTimer = null;
+    let capturedFrames = [];
+    let lastMotionTime = 0;
+    let frameCount = 0;
+    let lastFpsTime = Date.now();
+    
+    // Motion detection variables
+    let previousFrame = null;
+    let detectionCanvas = null;
+    let detectionContext = null;
+    
+    function updateSensitivity(value) {
+        document.getElementById('sensitivity_value').textContent = value;
+    }
+    
+    async function startCamera() {
+        try {
+            // Check if camera is supported
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error('Camera not supported on this device/browser');
+            }
+            
+            const cameraSource = document.getElementById('camera_source').value;
+            
+            if (cameraSource === 'upload') {
+                const fileInput = document.getElementById('video_file');
+                if (!fileInput.files[0]) {
+                    showAlert('Please select a video file first', 'warning');
+                    return;
+                }
+                startVideoFile(fileInput.files[0]);
+            } else {
+                // Check camera permissions first
+                try {
+                    const permissions = await navigator.permissions.query({name: 'camera'});
+                    if (permissions.state === 'denied') {
+                        throw new Error('Camera permission denied. Please enable camera access in your browser settings.');
+                    }
+                } catch (e) {
+                    // Permission API not supported, proceed anyway
+                    console.warn('Permission API not supported:', e);
+                }
+                
+                await startWebCamera(parseInt(cameraSource));
+            }
+        } catch (error) {
+            showAlert('Error starting camera: ' + error.message, 'danger');
+            console.error('Camera error:', error);
+            updateCameraStatus(false);
+        }
+    }
+    
+    async function startWebCamera(deviceId = 0) {
+        try {
+            // Stop any existing streams first
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+            }
+            
+            // Get available video devices
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(device => device.kind === 'videoinput');
+            
+            let constraints;
+            if (videoDevices.length > deviceId) {
+                constraints = {
+                    video: {
+                        deviceId: { exact: videoDevices[deviceId].deviceId },
+                        width: { ideal: 640, max: 1280 },
+                        height: { ideal: 480, max: 720 },
+                        frameRate: { ideal: 30, max: 60 }
+                    },
+                    audio: false
+                };
+            } else {
+                // Fallback constraints
+                constraints = {
+                    video: {
+                        width: { ideal: 640, max: 1280 },
+                        height: { ideal: 480, max: 720 },
+                        frameRate: { ideal: 30, max: 60 }
+                    },
+                    audio: false
+                };
+            }
+            
+            videoStream = await navigator.mediaDevices.getUserMedia(constraints);
+            
+            const video = document.getElementById('video_feed');
+            video.srcObject = videoStream;
+            
+            // Wait for video to load
+            await new Promise((resolve) => {
+                video.onloadedmetadata = resolve;
+            });
+            
+            // Show video and hide placeholder
+            document.getElementById('placeholder').style.display = 'none';
+            video.style.display = 'block';
+            
+            // Setup detection canvas
+            setupDetectionCanvas(video);
+            
+            // Start motion detection after a short delay
+            setTimeout(() => {
+                startMotionDetection();
+            }, 1000);
+            
+            // Update UI
+            updateCameraStatus(true);
+            
+            showAlert('Camera started successfully!', 'success');
+            
+        } catch (error) {
+            console.error('Camera access error:', error);
+            
+            // Provide more specific error messages
+            let errorMessage = 'Could not access camera: ';
+            if (error.name === 'NotAllowedError') {
+                errorMessage += 'Permission denied. Please allow camera access.';
+            } else if (error.name === 'NotFoundError') {
+                errorMessage += 'No camera found on this device.';
+            } else if (error.name === 'NotReadableError') {
+                errorMessage += 'Camera is already in use by another application.';
+            } else {
+                errorMessage += error.message || 'Unknown error occurred.';
+            }
+            
+            throw new Error(errorMessage);
+        }
+    }
+    
+    function startVideoFile(file) {
+        const video = document.getElementById('video_feed');
+        const url = URL.createObjectURL(file);
+        
+        video.src = url;
+        video.load();
+        
+        video.onloadeddata = () => {
+            document.getElementById('placeholder').style.display = 'none';
+            video.style.display = 'block';
+            
+            setupDetectionCanvas(video);
+            startMotionDetection();
+            updateCameraStatus(true);
+            
+            showAlert('Video file loaded successfully!', 'success');
+        };
+        
+        video.onerror = () => {
+            showAlert('Error loading video file', 'danger');
+        };
+    }
+    
+    function setupDetectionCanvas(video) {
+        detectionCanvas = document.getElementById('detection_canvas');
+        detectionContext = detectionCanvas.getContext('2d');
+        
+        // Function to update canvas size
+        const updateCanvasSize = () => {
+            if (video.videoWidth && video.videoHeight) {
+                detectionCanvas.width = video.videoWidth;
+                detectionCanvas.height = video.videoHeight;
+                
+                // Get the video element's displayed size
+                const videoRect = video.getBoundingClientRect();
+                detectionCanvas.style.width = videoRect.width + 'px';
+                detectionCanvas.style.height = videoRect.height + 'px';
+                detectionCanvas.style.position = 'absolute';
+                detectionCanvas.style.top = '0';
+                detectionCanvas.style.left = '0';
+                detectionCanvas.style.pointerEvents = 'none';
+                detectionCanvas.style.zIndex = '10';
+                detectionCanvas.style.display = 'block';
+                
+                console.log('Canvas setup:', {
+                    canvasWidth: detectionCanvas.width,
+                    canvasHeight: detectionCanvas.height,
+                    displayWidth: videoRect.width,
+                    displayHeight: videoRect.height
+                });
+            }
+        };
+        
+        // Set canvas size immediately if video is ready
+        if (video.videoWidth && video.videoHeight) {
+            updateCanvasSize();
+        }
+        
+        // Also set up listener for when video metadata loads
+        video.addEventListener('loadedmetadata', updateCanvasSize);
+        
+        // Update canvas size on window resize
+        window.addEventListener('resize', updateCanvasSize);
+    }
+    
+    function startMotionDetection() {
+        isDetecting = true;
+        sessionStartTime = Date.now();
+        sessionTimer = setInterval(updateSessionTime, 1000);
+        
+        const video = document.getElementById('video_feed');
+        const detectionMode = document.querySelector('input[name="detection_mode"]:checked').value;
+        
+        // Show debug info
+        document.getElementById('debug_info').style.display = 'block';
+        
+        // Update video resolution display
+        if (video.videoWidth && video.videoHeight) {
+            document.getElementById('video_resolution').textContent = `${video.videoWidth}x${video.videoHeight}`;
+        }
+        
+        // Reset counters
+        frameCount = 0;
+        lastFpsTime = Date.now();
+        lastMotionTime = 0;
+        
+        // Start detection loop
+        detectMotion(video, detectionMode);
+        
+        showAlert('Motion detection started', 'success');
+    }
+    
+    function detectMotion(video, mode) {
+        if (!isDetecting || !video || video.readyState !== 4) {
+            return;
+        }
+        
+        try {
+            // Update FPS counter
+            frameCount++;
+            const currentTime = Date.now();
+            if (currentTime - lastFpsTime >= 1000) {
+                const fps = Math.round((frameCount * 1000) / (currentTime - lastFpsTime));
+                document.getElementById('fps_counter').textContent = fps;
+                frameCount = 0;
+                lastFpsTime = currentTime;
+            }
+            
+            // Create temporary canvas for frame comparison
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            
+            // Draw current frame
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const currentFrame = context.getImageData(0, 0, canvas.width, canvas.height);
+            
+            if (previousFrame && currentFrame.data.length === previousFrame.data.length) {
+                const motionDetected = compareFrames(currentFrame, previousFrame);
+                
+                if (motionDetected) {
+                    // Prevent too frequent motion detection (debounce)
+                    if (currentTime - lastMotionTime > 500) {
+                        handleMotionDetection();
+                        lastMotionTime = currentTime;
+                        
+                        // Update motion status
+                        document.getElementById('motion_status').textContent = 'Motion Detected!';
+                        document.getElementById('motion_status').style.color = '#ff4444';
+                        
+                        // Clear previous overlay graphics
+                        if (detectionContext) {
+                            detectionContext.clearRect(0, 0, detectionCanvas.width, detectionCanvas.height);
+                        }
+                        
+                        if (mode === 'people') {
+                            // Simulate people detection with some delay
+                            setTimeout(() => {
+                                if (Math.random() > 0.6) { // 40% chance to detect "person"
+                                    handlePeopleDetection();
+                                }
+                            }, 200);
+                        } else if (mode === 'objects') {
+                            // Simulate object detection
+                            setTimeout(() => {
+                                if (Math.random() > 0.7) { // 30% chance to detect "object"
+                                    drawObjectBox();
+                                }
+                            }, 150);
+                        }
+                    }
+                } else {
+                    // No motion detected
+                    if (currentTime - lastMotionTime > 2000) {
+                        document.getElementById('motion_status').textContent = 'No Motion';
+                        document.getElementById('motion_status').style.color = '#00ff00';
+                    }
+                }
+            }
+            
+            // Store current frame for next comparison
+            previousFrame = currentFrame;
+            
+        } catch (error) {
+            console.error('Motion detection error:', error);
+            document.getElementById('motion_status').textContent = 'Error: ' + error.message;
+            document.getElementById('motion_status').style.color = '#ff0000';
+        }
+        
+        // Continue detection with proper frame rate
+        if (isDetecting) {
+            setTimeout(() => {
+                requestAnimationFrame(() => detectMotion(video, mode));
+            }, 100); // Limit to ~10 FPS for performance
+        }
+    }
+    
+    function compareFrames(current, previous) {
+        const sensitivity = parseInt(document.getElementById('sensitivity').value);
+        const threshold = 20 + (10 - sensitivity) * 3; // More responsive threshold
+        
+        let diffPixels = 0;
+        const totalPixels = current.data.length / 4;
+        const sampleRate = 4; // Sample every 4th pixel for performance
+        
+        for (let i = 0; i < current.data.length; i += 4 * sampleRate) {
+            const rDiff = Math.abs(current.data[i] - previous.data[i]);
+            const gDiff = Math.abs(current.data[i + 1] - previous.data[i + 1]);
+            const bDiff = Math.abs(current.data[i + 2] - previous.data[i + 2]);
+            
+            const avgDiff = (rDiff + gDiff + bDiff) / 3;
+            
+            if (avgDiff > threshold) {
+                diffPixels++;
+            }
+        }
+        
+        const motionPercentage = (diffPixels / (totalPixels / sampleRate)) * 100;
+        const motionThreshold = Math.max(0.1, (11 - sensitivity) * 0.1); // Dynamic threshold based on sensitivity
+        
+        return motionPercentage > motionThreshold;
+    }
+    
+    function handleMotionDetection() {
+        motionCount++;
+        document.getElementById('motion_count').textContent = motionCount;
+        
+        // Show motion alert if enabled
+        if (document.getElementById('motion_alerts').checked) {
+            showMotionAlert();
+        }
+        
+        // Draw motion indicator on canvas
+        drawMotionIndicator();
+    }
+    
+    function handlePeopleDetection() {
+        peopleCount++;
+        document.getElementById('people_count').textContent = peopleCount;
+        
+        // Draw person detection box (simulated)
+        drawPersonBox();
+    }
+    
+    function showMotionAlert() {
+        const overlay = document.getElementById('motion_overlay');
+        overlay.style.display = 'block';
+        
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            hideMotionAlert();
+        }, 3000);
+    }
+    
+    function hideMotionAlert() {
+        document.getElementById('motion_overlay').style.display = 'none';
+    }
+    
+    function drawMotionIndicator() {
+        if (!detectionContext || !detectionCanvas.width || !detectionCanvas.height) return;
+        
+        // Save current context state
+        detectionContext.save();
+        
+        // Draw motion alert box
+        const alertWidth = 120;
+        const alertHeight = 40;
+        const x = 20;
+        const y = 20;
+        
+        // Semi-transparent background
+        detectionContext.fillStyle = 'rgba(255, 0, 0, 0.8)';
+        detectionContext.fillRect(x, y, alertWidth, alertHeight);
+        
+        // Border
+        detectionContext.strokeStyle = '#ff0000';
+        detectionContext.lineWidth = 2;
+        detectionContext.strokeRect(x, y, alertWidth, alertHeight);
+        
+        // Text
+        detectionContext.fillStyle = '#ffffff';
+        detectionContext.font = 'bold 16px Arial';
+        detectionContext.textAlign = 'center';
+        detectionContext.fillText('MOTION', x + alertWidth/2, y + alertHeight/2 + 6);
+        
+        // Draw motion indicator dots
+        const dotCount = 5;
+        for (let i = 0; i < dotCount; i++) {
+            const dotX = Math.random() * detectionCanvas.width;
+            const dotY = Math.random() * detectionCanvas.height;
+            const dotSize = Math.random() * 8 + 4;
+            
+            detectionContext.beginPath();
+            detectionContext.arc(dotX, dotY, dotSize, 0, 2 * Math.PI);
+            detectionContext.fillStyle = 'rgba(255, 255, 0, 0.8)';
+            detectionContext.fill();
+        }
+        
+        // Restore context state
+        detectionContext.restore();
+        
+        // Clear indicator after 1 second
+        setTimeout(() => {
+            if (detectionContext && detectionCanvas.width) {
+                detectionContext.clearRect(0, 0, detectionCanvas.width, detectionCanvas.height);
+            }
+        }, 1000);
+    }
+    
+    function drawPersonBox() {
+        if (!detectionContext || !detectionCanvas.width || !detectionCanvas.height) return;
+        
+        // Save current context state
+        detectionContext.save();
+        
+        // Generate realistic person detection box
+        const boxWidth = 60 + Math.random() * 40; // 60-100px width
+        const boxHeight = 100 + Math.random() * 50; // 100-150px height
+        const x = Math.random() * (detectionCanvas.width - boxWidth);
+        const y = Math.random() * (detectionCanvas.height - boxHeight);
+        
+        // Draw bounding box
+        detectionContext.strokeStyle = '#00ff00';
+        detectionContext.lineWidth = 3;
+        detectionContext.strokeRect(x, y, boxWidth, boxHeight);
+        
+        // Draw label background
+        const labelWidth = 80;
+        const labelHeight = 25;
+        detectionContext.fillStyle = 'rgba(0, 255, 0, 0.8)';
+        detectionContext.fillRect(x, y - labelHeight, labelWidth, labelHeight);
+        
+        // Draw label text
+        detectionContext.fillStyle = '#000000';
+        detectionContext.font = 'bold 14px Arial';
+        detectionContext.textAlign = 'left';
+        detectionContext.fillText('PERSON', x + 5, y - 8);
+        
+        // Draw confidence score
+        const confidence = (85 + Math.random() * 10).toFixed(1);
+        detectionContext.fillStyle = '#ffffff';
+        detectionContext.font = '12px Arial';
+        detectionContext.fillText(`${confidence}%`, x + 50, y - 8);
+        
+        // Add corner markers for better visibility
+        const cornerSize = 10;
+        detectionContext.strokeStyle = '#ffff00';
+        detectionContext.lineWidth = 2;
+        
+        // Top-left corner
+        detectionContext.beginPath();
+        detectionContext.moveTo(x, y + cornerSize);
+        detectionContext.lineTo(x, y);
+        detectionContext.lineTo(x + cornerSize, y);
+        detectionContext.stroke();
+        
+        // Top-right corner
+        detectionContext.beginPath();
+        detectionContext.moveTo(x + boxWidth - cornerSize, y);
+        detectionContext.lineTo(x + boxWidth, y);
+        detectionContext.lineTo(x + boxWidth, y + cornerSize);
+        detectionContext.stroke();
+        
+        // Bottom-left corner
+        detectionContext.beginPath();
+        detectionContext.moveTo(x, y + boxHeight - cornerSize);
+        detectionContext.lineTo(x, y + boxHeight);
+        detectionContext.lineTo(x + cornerSize, y + boxHeight);
+        detectionContext.stroke();
+        
+        // Bottom-right corner
+        detectionContext.beginPath();
+        detectionContext.moveTo(x + boxWidth - cornerSize, y + boxHeight);
+        detectionContext.lineTo(x + boxWidth, y + boxHeight);
+        detectionContext.lineTo(x + boxWidth, y + boxHeight - cornerSize);
+        detectionContext.stroke();
+        
+        // Restore context state
+        detectionContext.restore();
+        
+        // Clear detection box after 2 seconds
+        setTimeout(() => {
+            if (detectionContext && detectionCanvas.width) {
+                detectionContext.clearRect(x - 5, y - labelHeight - 5, boxWidth + 10, boxHeight + labelHeight + 10);
+            }
+        }, 2000);
+    }
+    
+    function drawObjectBox() {
+        if (!detectionContext || !detectionCanvas.width || !detectionCanvas.height) return;
+        
+        // Save current context state
+        detectionContext.save();
+        
+        // Generate object detection box
+        const boxWidth = 40 + Math.random() * 60;
+        const boxHeight = 40 + Math.random() * 60;
+        const x = Math.random() * (detectionCanvas.width - boxWidth);
+        const y = Math.random() * (detectionCanvas.height - boxHeight);
+        
+        // Draw bounding box
+        detectionContext.strokeStyle = '#00bfff';
+        detectionContext.lineWidth = 2;
+        detectionContext.strokeRect(x, y, boxWidth, boxHeight);
+        
+        // Draw label
+        detectionContext.fillStyle = 'rgba(0, 191, 255, 0.8)';
+        detectionContext.fillRect(x, y - 20, 70, 20);
+        
+        detectionContext.fillStyle = '#000000';
+        detectionContext.font = 'bold 12px Arial';
+        detectionContext.textAlign = 'left';
+        detectionContext.fillText('OBJECT', x + 5, y - 6);
+        
+        // Restore context state
+        detectionContext.restore();
+        
+        // Clear after 1.5 seconds
+        setTimeout(() => {
+            if (detectionContext && detectionCanvas.width) {
+                detectionContext.clearRect(x - 2, y - 22, boxWidth + 4, boxHeight + 24);
+            }
+        }, 1500);
+    }
+    
+    function captureFrame() {
+        const video = document.getElementById('video_feed');
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0);
+        
+        const imageData = canvas.toDataURL('image/png');
+        const timestamp = new Date().toLocaleString();
+        
+        capturedFrames.push({
+            data: imageData,
+            timestamp: timestamp
+        });
+        
+        displayCapturedFrames();
+        showAlert('Frame captured successfully!', 'success');
+    }
+    
+    function displayCapturedFrames() {
+        const container = document.getElementById('captured_frames');
+        
+        if (capturedFrames.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center text-muted">
+                    <i class="fas fa-camera" style="font-size: 2rem;"></i>
+                    <p class="mt-2">No frames captured yet</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const framesHtml = capturedFrames.map((frame, index) => `
+            <div class="col-md-3 mb-3">
+                <div class="card">
+                    <img src="${frame.data}" class="card-img-top" alt="Captured frame">
+                    <div class="card-body p-2">
+                        <small class="text-muted">${frame.timestamp}</small>
+                        <button class="btn btn-sm btn-outline-danger float-end" onclick="deleteFrame(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        container.innerHTML = framesHtml;
+    }
+    
+    function deleteFrame(index) {
+        capturedFrames.splice(index, 1);
+        displayCapturedFrames();
+    }
+    
+    function clearFrames() {
+        capturedFrames = [];
+        displayCapturedFrames();
+        showAlert('All frames cleared', 'info');
+    }
+    
+    function stopCamera() {
+        isDetecting = false;
+        
+        if (videoStream) {
+            videoStream.getTracks().forEach(track => track.stop());
+            videoStream = null;
+        }
+        
+        const video = document.getElementById('video_feed');
+        video.srcObject = null;
+        video.src = '';
+        
+        if (sessionTimer) {
+            clearInterval(sessionTimer);
+            sessionTimer = null;
+        }
+        
+        // Reset UI
+        document.getElementById('video_feed').style.display = 'none';
+        document.getElementById('detection_canvas').style.display = 'none';
+        document.getElementById('placeholder').style.display = 'flex';
+        
+        updateCameraStatus(false);
+        showAlert('Camera stopped', 'info');
+    }
+    
+    function updateCameraStatus(isActive) {
+        const statusBadge = document.getElementById('status_badge');
+        const startBtn = document.getElementById('start_camera');
+        const stopBtn = document.getElementById('stop_camera');
+        const captureBtn = document.getElementById('capture_frame');
+        
+        if (isActive) {
+            statusBadge.textContent = 'Active';
+            statusBadge.className = 'badge bg-success';
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            captureBtn.disabled = false;
+        } else {
+            statusBadge.textContent = 'Stopped';
+            statusBadge.className = 'badge bg-secondary';
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            captureBtn.disabled = true;
+        }
+    }
+    
+    function updateSessionTime() {
+        if (!sessionStartTime) return;
+        
+        const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        
+        document.getElementById('session_time').textContent = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    
+    // Handle camera source change
+    document.getElementById('camera_source').addEventListener('change', function() {
+        const uploadSection = document.getElementById('video_upload_section');
+        if (this.value === 'upload') {
+            uploadSection.style.display = 'block';
+        } else {
+            uploadSection.style.display = 'none';
+        }
+    });
+    
+    // Handle debug mode toggle
+    document.getElementById('debug_mode').addEventListener('change', function() {
+        const debugInfo = document.getElementById('debug_info');
+        if (this.checked) {
+            debugInfo.style.display = 'block';
+        } else {
+            debugInfo.style.display = 'none';
+        }
+    });
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+        if (videoStream) {
+            videoStream.getTracks().forEach(track => track.stop());
+        }
+    });
+</script>
+{% endblock %}

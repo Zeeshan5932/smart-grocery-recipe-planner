@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Smart Grocery + Recipe Planner{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-10">
+                <h1 class="display-3 fw-bold mb-4">🍽️ Smart Grocery + Recipe Planner</h1>
+                <p class="lead mb-5">AI-powered meal planning with intelligent grocery lists and personalized recipes for a healthier lifestyle</p>
+                <div class="d-flex justify-content-center gap-3 mb-5">
+                    <a href="{{ url_for('meal_planner') }}" class="btn btn-primary btn-lg px-4">
+                        <i class="fas fa-rocket me-2"></i>Start Planning
+                    </a>
+                    <button class="btn btn-outline-light btn-lg px-4" onclick="scrollToFeatures()">
+                        <i class="fas fa-info-circle me-2"></i>Learn More
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Features Grid -->
+<div class="container my-5" id="features">
+    <div class="main-content">
+        <div class="row text-center mb-5">
+            <div class="col">
+                <h2 class="display-5 fw-bold mb-3">🌟 Powerful Features</h2>
+                <p class="lead text-muted">Everything you need to transform your meal planning experience</p>
+            </div>
+        </div>
+        
+        <!-- 6-Card Feature Grid -->
+        <div class="row g-4 mb-5">
+            <!-- Row 1 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 text-center p-4 feature-card">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h4 class="mb-3">🍽️ Meal Planner</h4>
+                    <p class="text-muted mb-4">Create personalized weekly meal plans with AI-powered recipe suggestions based on your preferences and dietary needs.</p>
+                    <a href="{{ url_for('meal_planner') }}" class="btn btn-primary">
+                        <i class="fas fa-calendar-alt me-2"></i>Plan Meals
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 text-center p-4 feature-card">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h4 class="mb-3">🤖 AI Assistant</h4>
+                    <p class="text-muted mb-4">Chat with our intelligent assistant for personalized nutrition advice, cooking tips, and meal planning support.</p>
+                    <a href="#" class="btn btn-success" onclick="toggleChatbot()">
+                        <i class="fas fa-comments me-2"></i>Chat Now
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 text-center p-4 feature-card">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                    </div>
+                    <h4 class="mb-3">🧙‍♂️ Recipe Generator</h4>
+                    <p class="text-muted mb-4">AI-powered recipe creation based on available ingredients, dietary restrictions, and cooking preferences.</p>
+                    <a href="/recipe-generator" class="btn btn-warning">
+                        <i class="fas fa-magic me-2"></i>Generate Recipes
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 text-center p-4 feature-card">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h4 class="mb-3">🛒 Smart Shopping</h4>
+                    <p class="text-muted mb-4">AI-powered grocery list generation with budget optimization and local store integration.</p>
+                    <a href="/smart-shopping" class="btn btn-info">
+                        <i class="fas fa-cart-plus me-2"></i>Shop Smart
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 text-center p-4 feature-card">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h4 class="mb-3">💝 Health Tracking</h4>
+                    <p class="text-muted mb-4">Monitor your nutritional goals, track calories, and get insights into your eating habits with detailed analytics.</p>
+                    <a href="/health-tracking" class="btn btn-danger">
+                        <i class="fas fa-chart-line me-2"></i>Track Health
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 text-center p-4 feature-card">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4 class="mb-3">👨‍👩‍👧‍👦 Family Plans</h4>
+                    <p class="text-muted mb-4">Create meal plans for the whole family with individual dietary preferences and nutritional requirements.</p>
+                    <a href="/family-plans" class="btn btn-purple">
+                        <i class="fas fa-home me-2"></i>Family Mode
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Section -->
+        <div class="row text-center mt-5">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number" id="users-count">0</div>
+                    <div class="stat-label">Happy Users</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number" id="recipes-count">0</div>
+                    <div class="stat-label">Recipes Generated</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number" id="meals-count">0</div>
+                    <div class="stat-label">Meals Planned</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number" id="savings-count">0</div>
+                    <div class="stat-label">Money Saved</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Call to Action -->
+        <div class="row mt-5">
+            <div class="col text-center">
+                <h3 class="mb-4">Ready to Transform Your Meal Planning?</h3>
+                <a href="{{ url_for('meal_planner') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i>Get Started Now
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Smooth scroll to features
+    function scrollToFeatures() {
+        document.getElementById('features').scrollIntoView({
+            behavior: 'smooth'
+        });
+    }
+
+    // Animate numbers function
+    function animateNumber(element, start, end, duration) {
+        let current = start;
+        const increment = (end - start) / (duration / 16);
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= end) {
+                current = end;
+                clearInterval(timer);
+            }
+            element.textContent = Math.floor(current).toLocaleString() + '+';
+        }, 16);
+    }
+
+    // Load on page ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create intersection observer for number animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const element = entry.target;
+                    const finalNumber = parseInt(element.getAttribute('data-final') || '1000');
+                    animateNumber(element, 0, finalNumber, 2000);
+                    observer.unobserve(element);
+                }
+            });
+        });
+        
+        observer.observe(document.getElementById('users-count'));
+    });
+</script>
+{% endblock %}

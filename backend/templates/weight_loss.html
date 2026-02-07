@@ -1,0 +1,471 @@
+{% extends "base.html" %}
+
+{% block title %}Weight Loss Tracker - Smart Grocery + Recipe Planner{% endblock %}
+
+{% block content %}
+<div class="weight-loss-bg" style="margin: 0; padding: 2rem 0;">
+    <div class="container">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-white floating">
+                <i class="fas fa-chart-line me-3"></i>
+                Weight Loss Tracker
+            </h1>
+            <p class="lead text-white opacity-75">Track your progress and achieve your weight loss goals</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="row g-4">
+                <!-- Goal Setting Panel -->
+                <div class="col-lg-6">
+                    <div class="card glass">
+                        <div class="card-header">
+                            <h5><i class="fas fa-target me-2"></i>Weight Loss Goals</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="weight-loss-form">
+                                <!-- Current Weight -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-weight me-2 text-primary"></i>Current Weight (kg)
+                                    </label>
+                                    <input type="number" class="form-control" id="current_weight" 
+                                           placeholder="Enter current weight" min="30" max="200" step="0.1" value="75">
+                                </div>
+                                
+                                <!-- Target Weight -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-bullseye me-2 text-success"></i>Target Weight (kg)
+                                    </label>
+                                    <input type="number" class="form-control" id="target_weight" 
+                                           placeholder="Enter target weight" min="30" max="200" step="0.1" value="65">
+                                </div>
+                                
+                                <!-- Height -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-ruler-vertical me-2 text-info"></i>Height (cm)
+                                    </label>
+                                    <input type="number" class="form-control" id="height" 
+                                           placeholder="Enter height" min="100" max="250" value="170">
+                                </div>
+                                
+                                <!-- Goal Timeline -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-calendar-alt me-2 text-warning"></i>Goal Timeline
+                                    </label>
+                                    <select class="form-select" id="timeline">
+                                        <option value="1">1 Month</option>
+                                        <option value="3" selected>3 Months</option>
+                                        <option value="6">6 Months</option>
+                                        <option value="12">1 Year</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Activity Level -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-running me-2 text-danger"></i>Activity Level
+                                    </label>
+                                    <select class="form-select" id="activity_level">
+                                        <option value="1.2">Sedentary (little/no exercise)</option>
+                                        <option value="1.375" selected>Lightly active (light exercise 1-3 days/week)</option>
+                                        <option value="1.55">Moderately active (moderate exercise 3-5 days/week)</option>
+                                        <option value="1.725">Very active (hard exercise 6-7 days/week)</option>
+                                        <option value="1.9">Extremely active (very hard exercise, physical job)</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Gender -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-user me-2 text-secondary"></i>Gender
+                                    </label>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="gender" id="male" value="male" checked>
+                                                <label class="form-check-label" for="male">Male</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="gender" id="female" value="female">
+                                                <label class="form-check-label" for="female">Female</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Age -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-birthday-cake me-2 text-pink"></i>Age
+                                    </label>
+                                    <input type="number" class="form-control" id="age" 
+                                           placeholder="Enter age" min="16" max="100" value="30">
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="text-center">
+                                    <button type="button" class="btn btn-success me-2" onclick="calculateWeightLoss()">
+                                        <i class="fas fa-calculator me-2"></i>Calculate Plan
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="saveProgress()">
+                                        <i class="fas fa-save me-2"></i>Save Progress
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results & Progress Panel -->
+                <div class="col-lg-6">
+                    <div class="card glass">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-bar me-2"></i>Weight Loss Plan</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="weight-loss-results">
+                                <div class="text-center py-4">
+                                    <i class="fas fa-chart-line text-muted floating" style="font-size: 3rem;"></i>
+                                    <h6 class="mt-3 text-muted">Set your weight loss goals</h6>
+                                    <p class="text-muted">Get a personalized weight loss plan</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Tracking -->
+                    <div class="card glass mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-trophy me-2"></i>Progress Tracking</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Update Current Weight</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="progress_weight" 
+                                           placeholder="Current weight" step="0.1">
+                                    <button class="btn btn-outline-success" onclick="updateProgress()">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="progress-chart">
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-chart-area" style="font-size: 2rem;"></i>
+                                    <p class="mt-2">Weight progress will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Weekly Schedule -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card glass">
+                        <div class="card-header">
+                            <h5><i class="fas fa-calendar-week me-2"></i>Weekly Exercise & Diet Schedule</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="weekly-schedule">
+                                <div class="text-center text-muted py-4">
+                                    <i class="fas fa-calendar-plus" style="font-size: 2rem;"></i>
+                                    <p class="mt-2">Calculate your plan to see weekly schedule</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let weightHistory = JSON.parse(localStorage.getItem('weightHistory') || '[]');
+    
+    function calculateWeightLoss() {
+        const currentWeight = parseFloat(document.getElementById('current_weight').value);
+        const targetWeight = parseFloat(document.getElementById('target_weight').value);
+        const height = parseFloat(document.getElementById('height').value);
+        const timeline = parseInt(document.getElementById('timeline').value);
+        const activityLevel = parseFloat(document.getElementById('activity_level').value);
+        const gender = document.querySelector('input[name="gender"]:checked').value;
+        const age = parseInt(document.getElementById('age').value);
+        
+        if (!currentWeight || !targetWeight || !height || !age) {
+            showAlert('Please fill in all required fields', 'warning');
+            return;
+        }
+        
+        if (currentWeight <= targetWeight) {
+            showAlert('Target weight should be less than current weight', 'warning');
+            return;
+        }
+        
+        // Calculate BMR (Basal Metabolic Rate)
+        let bmr;
+        if (gender === 'male') {
+            bmr = 88.362 + (13.397 * currentWeight) + (4.799 * height) - (5.677 * age);
+        } else {
+            bmr = 447.593 + (9.247 * currentWeight) + (3.098 * height) - (4.330 * age);
+        }
+        
+        // Calculate TDEE (Total Daily Energy Expenditure)
+        const tdee = bmr * activityLevel;
+        
+        // Calculate weight loss details
+        const weightToLose = currentWeight - targetWeight;
+        const weeksToGoal = timeline * 4;
+        const weightLossPerWeek = weightToLose / weeksToGoal;
+        const calorieDeficitPerDay = (weightLossPerWeek * 7700) / 7; // 7700 calories = 1kg fat
+        const targetCalories = tdee - calorieDeficitPerDay;
+        
+        // Calculate BMI
+        const currentBMI = currentWeight / ((height / 100) ** 2);
+        const targetBMI = targetWeight / ((height / 100) ** 2);
+        
+        // Determine if plan is realistic
+        let planStatus = 'success';
+        let planMessage = 'Realistic and healthy plan';
+        
+        if (weightLossPerWeek > 1) {
+            planStatus = 'warning';
+            planMessage = 'Aggressive plan - consider longer timeline';
+        }
+        if (weightLossPerWeek > 1.5) {
+            planStatus = 'danger';
+            planMessage = 'Too aggressive - extend timeline for safety';
+        }
+        if (targetCalories < 1200) {
+            planStatus = 'danger';
+            planMessage = 'Calorie intake too low - unsafe plan';
+        }
+        
+        // Generate results HTML
+        const resultsHtml = `
+            <div class="row text-center g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card border-0 glass">
+                        <div class="card-body">
+                            <i class="fas fa-weight text-danger" style="font-size: 2rem;"></i>
+                            <h4 class="mt-2">${weightToLose.toFixed(1)} kg</h4>
+                            <small class="text-muted">To Lose</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 glass">
+                        <div class="card-body">
+                            <i class="fas fa-calendar text-info" style="font-size: 2rem;"></i>
+                            <h4 class="mt-2">${timeline} months</h4>
+                            <small class="text-muted">Timeline</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 glass">
+                        <div class="card-body">
+                            <i class="fas fa-fire text-warning" style="font-size: 2rem;"></i>
+                            <h4 class="mt-2">${Math.round(targetCalories)}</h4>
+                            <small class="text-muted">Daily Calories</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-${planStatus}" role="alert">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Plan Assessment:</strong> ${planMessage}
+            </div>
+            
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <h6><i class="fas fa-chart-pie me-2"></i>Current Stats</h6>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-transparent">Weight: ${currentWeight} kg</li>
+                        <li class="list-group-item bg-transparent">BMI: ${currentBMI.toFixed(1)}</li>
+                        <li class="list-group-item bg-transparent">TDEE: ${Math.round(tdee)} cal/day</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6><i class="fas fa-bullseye me-2"></i>Target Stats</h6>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-transparent">Weight: ${targetWeight} kg</li>
+                        <li class="list-group-item bg-transparent">BMI: ${targetBMI.toFixed(1)}</li>
+                        <li class="list-group-item bg-transparent">Weekly Loss: ${weightLossPerWeek.toFixed(2)} kg</li>
+                    </ul>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('weight-loss-results').innerHTML = resultsHtml;
+        generateWeeklySchedule(targetCalories, weightLossPerWeek);
+        
+        showAlert('Weight loss plan calculated successfully!', 'success');
+    }
+    
+    function generateWeeklySchedule(targetCalories, weightLossPerWeek) {
+        const exercises = [
+            { day: 'Monday', exercise: 'Cardio (30 min)', calories: '300-400', meal: 'High protein breakfast' },
+            { day: 'Tuesday', exercise: 'Strength Training', calories: '200-300', meal: 'Balanced lunch' },
+            { day: 'Wednesday', exercise: 'Yoga/Stretching', calories: '150-200', meal: 'Light dinner' },
+            { day: 'Thursday', exercise: 'Cardio (45 min)', calories: '400-500', meal: 'Protein-rich meals' },
+            { day: 'Friday', exercise: 'Full Body Workout', calories: '300-400', meal: 'Balanced nutrition' },
+            { day: 'Saturday', exercise: 'Outdoor Activity', calories: '250-350', meal: 'Healthy snacks' },
+            { day: 'Sunday', exercise: 'Rest/Light Walk', calories: '100-150', meal: 'Meal prep day' }
+        ];
+        
+        const scheduleHtml = exercises.map(item => `
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card glass h-100">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="fas fa-calendar-day me-2 text-primary"></i>${item.day}
+                        </h6>
+                        <p class="card-text">
+                            <i class="fas fa-dumbbell me-2 text-success"></i><strong>Exercise:</strong><br>
+                            ${item.exercise}<br>
+                            <small class="text-muted">Burn: ${item.calories} cal</small>
+                        </p>
+                        <p class="card-text">
+                            <i class="fas fa-utensils me-2 text-warning"></i><strong>Focus:</strong><br>
+                            ${item.meal}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        document.getElementById('weekly-schedule').innerHTML = `
+            <div class="row">
+                ${scheduleHtml}
+            </div>
+            <div class="alert alert-info mt-3">
+                <i class="fas fa-lightbulb me-2"></i>
+                <strong>Daily Target:</strong> ${Math.round(targetCalories)} calories intake with regular exercise
+            </div>
+        `;
+    }
+    
+    function saveProgress() {
+        const weightData = {
+            current_weight: parseFloat(document.getElementById('current_weight').value),
+            target_weight: parseFloat(document.getElementById('target_weight').value),
+            height: parseFloat(document.getElementById('height').value),
+            timeline: parseInt(document.getElementById('timeline').value),
+            activity_level: parseFloat(document.getElementById('activity_level').value),
+            gender: document.querySelector('input[name="gender"]:checked').value,
+            age: parseInt(document.getElementById('age').value),
+            date: new Date().toISOString().split('T')[0]
+        };
+        
+        // Save to localStorage
+        localStorage.setItem('weightLossGoals', JSON.stringify(weightData));
+        
+        // Add to weight history
+        if (!weightHistory.find(entry => entry.date === weightData.date)) {
+            weightHistory.push({
+                date: weightData.date,
+                weight: weightData.current_weight
+            });
+            localStorage.setItem('weightHistory', JSON.stringify(weightHistory));
+        }
+        
+        showAlert('Progress saved successfully!', 'success');
+        updateProgressChart();
+    }
+    
+    function updateProgress() {
+        const newWeight = parseFloat(document.getElementById('progress_weight').value);
+        if (!newWeight) {
+            showAlert('Please enter a valid weight', 'warning');
+            return;
+        }
+        
+        const today = new Date().toISOString().split('T')[0];
+        const existingEntry = weightHistory.findIndex(entry => entry.date === today);
+        
+        if (existingEntry !== -1) {
+            weightHistory[existingEntry].weight = newWeight;
+        } else {
+            weightHistory.push({ date: today, weight: newWeight });
+        }
+        
+        // Sort by date
+        weightHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        localStorage.setItem('weightHistory', JSON.stringify(weightHistory));
+        document.getElementById('progress_weight').value = '';
+        
+        showAlert('Weight updated successfully!', 'success');
+        updateProgressChart();
+    }
+    
+    function updateProgressChart() {
+        if (weightHistory.length === 0) return;
+        
+        const chartHtml = weightHistory.slice(-7).map((entry, index) => {
+            const weightChange = index > 0 ? entry.weight - weightHistory[weightHistory.indexOf(entry) - 1].weight : 0;
+            const changeClass = weightChange < 0 ? 'text-success' : weightChange > 0 ? 'text-danger' : 'text-muted';
+            const changeIcon = weightChange < 0 ? 'fa-arrow-down' : weightChange > 0 ? 'fa-arrow-up' : 'fa-minus';
+            
+            return `
+                <div class="d-flex justify-content-between align-items-center p-2 glass rounded mb-2">
+                    <div>
+                        <strong>${entry.date}</strong><br>
+                        <small class="text-muted">${entry.weight} kg</small>
+                    </div>
+                    <div class="${changeClass}">
+                        <i class="fas ${changeIcon}"></i>
+                        ${Math.abs(weightChange).toFixed(1)} kg
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        document.getElementById('progress-chart').innerHTML = chartHtml || '<p class="text-muted text-center">No progress data yet</p>';
+    }
+    
+    // Load saved data on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedGoals = localStorage.getItem('weightLossGoals');
+        if (savedGoals) {
+            const goals = JSON.parse(savedGoals);
+            document.getElementById('current_weight').value = goals.current_weight || '';
+            document.getElementById('target_weight').value = goals.target_weight || '';
+            document.getElementById('height').value = goals.height || '';
+            document.getElementById('timeline').value = goals.timeline || '3';
+            document.getElementById('activity_level').value = goals.activity_level || '1.375';
+            document.querySelector(`input[name="gender"][value="${goals.gender}"]`).checked = true;
+            document.getElementById('age').value = goals.age || '';
+        }
+        
+        updateProgressChart();
+        
+        // Auto-calculate when all fields are filled
+        const inputs = ['current_weight', 'target_weight', 'height', 'age'];
+        inputs.forEach(inputId => {
+            document.getElementById(inputId).addEventListener('input', function() {
+                clearTimeout(window.weightLossTimeout);
+                window.weightLossTimeout = setTimeout(() => {
+                    const allFilled = inputs.every(id => document.getElementById(id).value);
+                    if (allFilled) {
+                        calculateWeightLoss();
+                    }
+                }, 1500);
+            });
+        });
+    });
+</script>
+{% endblock %}

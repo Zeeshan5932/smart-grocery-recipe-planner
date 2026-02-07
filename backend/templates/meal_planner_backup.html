@@ -1,0 +1,1234 @@
+{% extends "base.html" %}
+
+{% block title %}Meal Planner - Smart Grocery + Recipe Planner{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="main-content">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold text-primary">
+                <i class="fas fa-utensils me-3"></i>
+                AI Meal Planner
+            </h1>
+            <p class="lead text-muted">Create personalized meal plans based on your health goals and preferences</p>
+        </div>
+        
+        <!-- BMI Calculator Only -->
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="glass-card shadow-strong">
+                    <div class="card-body p-4">
+                        <h4 class="card-title mb-4 text-primary text-center">
+                            <i class="fas fa-calculator me-2"></i>Calculate Your BMI
+                        </h4>
+                        <p class="text-muted mb-4 text-center">First, let's calculate your Body Mass Index to better understand your health profile.</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Height (cm)</label>
+                                    <input type="number" class="form-control" id="height" placeholder="170" min="100" max="250" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Weight (kg)</label>
+                                    <input type="number" class="form-control" id="weight" placeholder="70" min="30" max="200" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="calculateBMI()">
+                                <i class="fas fa-calculator me-2"></i>Calculate BMI
+                            </button>
+                        </div>
+                        
+                        <!-- BMI Result -->
+                        <div id="bmi-result" class="alert alert-info d-none">
+                            <div class="text-center">
+                                <h5 class="mb-1">Your BMI: <span id="bmi-value" class="fw-bold"></span></h5>
+                                <p class="mb-3">Category: <span id="bmi-category" class="fw-bold"></span></p>
+                                <button type="button" class="btn btn-success btn-lg" onclick="proceedToMealPlan()">
+                                    Continue to Meal Planning <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Instructions when BMI not calculated -->
+                        <div id="bmi-instructions" class="text-center text-muted">
+                            <p><i class="fas fa-info-circle me-2"></i>Enter your height and weight, then click "Calculate BMI" to proceed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let userBMI = null;
+    let userBMICategory = '';
+    
+    // BMI Calculator Function
+    function calculateBMI() {
+        console.log('calculateBMI function called');
+        
+        const height = parseFloat(document.getElementById('height').value);
+        const weight = parseFloat(document.getElementById('weight').value);
+        
+        console.log('Height:', height, 'Weight:', weight);
+        
+        if (!height || !weight || height <= 0 || weight <= 0) {
+            alert('Please enter valid height and weight values.');
+            return;
+        }
+        
+        // Calculate BMI
+        const bmi = (weight / ((height / 100) ** 2)).toFixed(1);
+        userBMI = bmi;
+        
+        console.log('Calculated BMI:', bmi);
+        
+        // Determine BMI category
+        let category = '';
+        let categoryClass = '';
+        
+        if (bmi < 18.5) {
+            category = 'Underweight';
+            categoryClass = 'text-warning';
+        } else if (bmi >= 18.5 && bmi < 25) {
+            category = 'Normal weight';
+            categoryClass = 'text-success';
+        } else if (bmi >= 25 && bmi < 30) {
+            category = 'Overweight';
+            categoryClass = 'text-warning';
+        } else {
+            category = 'Obese';
+            categoryClass = 'text-danger';
+        }
+        
+        userBMICategory = category;
+        console.log('BMI Category:', category);
+        
+        // Display BMI result
+        const bmiValueElement = document.getElementById('bmi-value');
+        const bmiCategoryElement = document.getElementById('bmi-category');
+        const bmiInstructions = document.getElementById('bmi-instructions');
+        const bmiResult = document.getElementById('bmi-result');
+        
+        if (bmiValueElement) bmiValueElement.textContent = bmi;
+        if (bmiCategoryElement) {
+            bmiCategoryElement.textContent = category;
+            bmiCategoryElement.className = `fw-bold ${categoryClass}`;
+        }
+        
+        // Hide instructions and show result
+        if (bmiInstructions) bmiInstructions.classList.add('d-none');
+        if (bmiResult) bmiResult.classList.remove('d-none');
+        
+        alert(`BMI calculated successfully! Your BMI is ${bmi} (${category})`);
+    }
+    
+    // Function to proceed to meal planning
+    function proceedToMealPlan() {
+        if (userBMI) {
+            alert(`Great! Your BMI is ${userBMI} (${userBMICategory}). Meal planning features will be available soon!`);
+        }
+    }
+    
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+        const bmiInstructions = document.getElementById('bmi-instructions');
+        const bmiResult = document.getElementById('bmi-result');
+        
+        if (bmiInstructions) bmiInstructions.classList.remove('d-none');
+        if (bmiResult) bmiResult.classList.add('d-none');
+    });
+</script>
+{% endblock %}
+                            <div class="card-body p-4">
+                                <h4 class="card-title mb-4 text-primary">
+                                    <i class="fas fa-user me-2"></i>Complete Your Profile
+                                </h4>
+                                <p class="text-muted mb-4">Tell us about yourself to get personalized meal recommendations.</p>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="profile-name" class="form-label">Full Name *</label>
+                                        <input type="text" class="form-control" id="profile-name" name="name" required placeholder="Enter your full name">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="profile-email" class="form-label">Email *</label>
+                                        <input type="email" class="form-control" id="profile-email" name="email" required placeholder="your.email@example.com">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="profile-age" class="form-label">Age *</label>
+                                        <input type="number" class="form-control" id="profile-age" name="age" min="13" max="120" required placeholder="25">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="profile-gender" class="form-label">Gender *</label>
+                                        <select class="form-select" id="profile-gender" name="gender" required>
+                                            <option value="">Select your gender</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="profile-activity" class="form-label">Activity Level *</label>
+                                        <select class="form-select" id="profile-activity" name="activity_level" required>
+                                            <option value="">Select activity level</option>
+                                            <option value="sedentary">Sedentary (little/no exercise)</option>
+                                            <option value="light">Light (light exercise 1-3 days/week)</option>
+                                            <option value="moderate">Moderate (moderate exercise 3-5 days/week)</option>
+                                            <option value="active">Active (hard exercise 6-7 days/week)</option>
+                                            <option value="very_active">Very Active (very hard exercise, physical job)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- BMI Information from Step 1 -->
+                                <div id="step2-bmi-info" class="mt-4 p-3 bg-light rounded d-none">
+                                    <h6><i class="fas fa-heartbeat me-2 text-success"></i>Your BMI Information</h6>
+                                    <div id="step2-bmi-display" class="mt-2">
+                                        <!-- BMI data will be filled from Step 1 -->
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between mt-4">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="previousStep()">
+                                        <i class="fas fa-arrow-left me-2"></i>Back
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="nextStep()">
+                                        Next Step <i class="fas fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Dietary Preferences -->
+                    <div class="step-content" data-step="3">
+                        <div class="glass-card shadow-strong">
+                            <div class="card-body p-4">
+                                <h4 class="card-title mb-4 text-primary">
+                                    <i class="fas fa-leaf me-2"></i>Dietary Preferences
+                                </h4>
+                                
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label">Dietary Restrictions (Select all that apply)</label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="vegetarian" id="vegetarian">
+                                                    <label class="form-check-label" for="vegetarian">Vegetarian</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="vegan" id="vegan">
+                                                    <label class="form-check-label" for="vegan">Vegan</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="gluten_free" id="gluten_free">
+                                                    <label class="form-check-label" for="gluten_free">Gluten Free</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="dairy_free" id="dairy_free">
+                                                    <label class="form-check-label" for="dairy_free">Dairy Free</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="keto" id="keto">
+                                                    <label class="form-check-label" for="keto">Keto</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="paleo" id="paleo">
+                                                    <label class="form-check-label" for="paleo">Paleo</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="low_carb" id="low_carb">
+                                                    <label class="form-check-label" for="low_carb">Low Carb</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="halal" id="halal">
+                                                    <label class="form-check-label" for="halal">Halal</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label for="cuisine_preference" class="form-label">Preferred Cuisine</label>
+                                        <select class="form-select" id="cuisine_preference" name="cuisine_preference">
+                                            <option value="any">Any Cuisine</option>
+                                            <option value="mediterranean">Mediterranean</option>
+                                            <option value="asian">Asian</option>
+                                            <option value="italian">Italian</option>
+                                            <option value="mexican">Mexican</option>
+                                            <option value="indian">Indian</option>
+                                            <option value="american">American</option>
+                                            <option value="middle_eastern">Middle Eastern</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label for="allergies" class="form-label">Food Allergies (if any)</label>
+                                        <textarea class="form-control" id="allergies" name="allergies" rows="2" placeholder="List any food allergies or ingredients to avoid"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Health Goals -->
+                    <div class="step-content" data-step="3">
+                        <div class="card">
+                            <div class="card-body p-4">
+                                <h4 class="card-title mb-4">
+                                    <i class="fas fa-target me-2 text-warning"></i>Health Goals
+                                </h4>
+                                
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label">Primary Health Goals (Select all that apply)</label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="weight_loss" id="weight_loss">
+                                                    <label class="form-check-label" for="weight_loss">Weight Loss</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="weight_gain" id="weight_gain">
+                                                    <label class="form-check-label" for="weight_gain">Weight Gain</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="muscle_building" id="muscle_building">
+                                                    <label class="form-check-label" for="muscle_building">Muscle Building</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="maintenance" id="maintenance">
+                                                    <label class="form-check-label" for="maintenance">Weight Maintenance</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="energy_boost" id="energy_boost">
+                                                    <label class="form-check-label" for="energy_boost">Energy Boost</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="heart_health" id="heart_health">
+                                                    <label class="form-check-label" for="heart_health">Heart Health</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label for="target_calories" class="form-label">Target Daily Calories</label>
+                                        <input type="number" class="form-control" id="target_calories" name="target_calories" min="1200" max="4000">
+                                        <small class="text-muted">Leave blank for AI calculation</small>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label for="meal_frequency" class="form-label">Meals per Day</label>
+                                        <select class="form-select" id="meal_frequency" name="meal_frequency">
+                                            <option value="3">3 Meals</option>
+                                            <option value="4">3 Meals + 1 Snack</option>
+                                            <option value="5">3 Meals + 2 Snacks</option>
+                                            <option value="6">6 Small Meals</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Calorie Calculator -->
+                                <div class="mt-4 p-3 bg-light rounded">
+                                    <h6><i class="fas fa-fire me-2"></i>Daily Calorie Needs</h6>
+                                    <div id="calorie-result" class="mt-2"></div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="calculateCalories()">
+                                        Calculate Recommended Calories
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 4: Budget & Plan -->
+                    <div class="step-content" data-step="4">
+                        <div class="card">
+                            <div class="card-body p-4">
+                                <h4 class="card-title mb-4">
+                                    <i class="fas fa-dollar-sign me-2 text-info"></i>Budget & Plan Details
+                                </h4>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="budget" class="form-label">Weekly Grocery Budget ($)</label>
+                                        <input type="number" class="form-control" id="budget" name="budget" min="20" max="1000" value="100" required>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label for="days" class="form-label">Plan Duration (Days)</label>
+                                        <select class="form-select" id="days" name="days">
+                                            <option value="3">3 Days</option>
+                                            <option value="7" selected>1 Week</option>
+                                            <option value="14">2 Weeks</option>
+                                            <option value="30">1 Month</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label for="cooking_time" class="form-label">Available Cooking Time</label>
+                                        <select class="form-select" id="cooking_time" name="cooking_time">
+                                            <option value="quick">Quick meals (15-30 min)</option>
+                                            <option value="moderate" selected>Moderate (30-60 min)</option>
+                                            <option value="extensive">Extensive cooking (60+ min)</option>
+                                            <option value="mixed">Mix of all</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label for="special_requests" class="form-label">Special Requests</label>
+                                        <textarea class="form-control" id="special_requests" name="special_requests" rows="3" placeholder="Any specific foods you want included or avoided, cooking preferences, etc."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <!-- Generate Button -->
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg" id="generate-btn">
+                                        <i class="fas fa-magic me-2"></i>Generate My Meal Plan
+                                    </button>
+                                    <div class="loading mt-3" id="generate-loading">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="spinner-border spinner-border-custom text-primary me-3" role="status"></div>
+                                            <span>Creating your personalized meal plan...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation Buttons -->
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <button type="button" class="btn btn-outline-secondary" id="prev-btn" onclick="previousStep()" style="display: none;">
+                            <i class="fas fa-arrow-left me-2"></i>Previous
+                        </button>
+                        
+                        <div class="flex-grow-1 text-center">
+                            <small class="text-muted">Step <span id="current-step-number">1</span> of <span id="total-steps">4</span></small>
+                        </div>
+                        
+                        <button type="button" class="btn btn-primary" id="next-btn" onclick="nextStep()">
+                            <span id="next-btn-text">Next</span>
+                            <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Results Section -->
+        <div id="results-section" style="display: none;" class="mt-5">
+            <div class="text-center mb-4">
+                <h2 class="display-6 fw-bold">
+                    <i class="fas fa-check-circle me-2 text-success"></i>
+                    Your Personalized Meal Plan
+                </h2>
+            </div>
+            
+            <!-- Results will be populated here -->
+            <div id="meal-plan-results"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .step-indicator {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+        position: relative;
+    }
+    
+    .step-indicator:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 60%;
+        width: 80%;
+        height: 2px;
+        background-color: #dee2e6;
+        z-index: 0;
+    }
+    
+    .step-indicator.active:not(:last-child)::after {
+        background-color: var(--primary-color);
+    }
+    
+    .step-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #dee2e6;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 5px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .step-indicator.active .step-circle {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .step-content {
+        display: none;
+    }
+    
+    .step-content.active {
+        display: block;
+    }
+    
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .form-control.is-invalid,
+    .form-select.is-invalid {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+    
+    .form-control.is-valid,
+    .form-select.is-valid {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+    
+    .step-indicator.completed .step-circle {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .step-indicator.completed:not(:last-child)::after {
+        background-color: #28a745;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentStep = 1;
+    const totalSteps = 4;
+    let userBMI = null;
+    let userBMICategory = '';
+    
+    // BMI Calculator Function
+    function calculateBMI() {
+        console.log('calculateBMI function called');
+        
+        const height = parseFloat(document.getElementById('height').value);
+        const weight = parseFloat(document.getElementById('weight').value);
+        
+        console.log('Height:', height, 'Weight:', weight);
+        
+        if (!height || !weight || height <= 0 || weight <= 0) {
+            showAlert('Please enter valid height and weight values.', 'warning');
+            return;
+        }
+        
+        // Calculate BMI
+        const bmi = (weight / ((height / 100) ** 2)).toFixed(1);
+        userBMI = bmi;
+        
+        console.log('Calculated BMI:', bmi);
+        
+        // Determine BMI category
+        let category = '';
+        let categoryClass = '';
+        
+        if (bmi < 18.5) {
+            category = 'Underweight';
+            categoryClass = 'text-warning';
+        } else if (bmi >= 18.5 && bmi < 25) {
+            category = 'Normal weight';
+            categoryClass = 'text-success';
+        } else if (bmi >= 25 && bmi < 30) {
+            category = 'Overweight';
+            categoryClass = 'text-warning';
+        } else {
+            category = 'Obese';
+            categoryClass = 'text-danger';
+        }
+        
+        userBMICategory = category;
+        console.log('BMI Category:', category);
+        
+        // Display BMI result
+        const bmiValueElement = document.getElementById('bmi-value');
+        const bmiCategoryElement = document.getElementById('bmi-category');
+        const bmiInstructions = document.getElementById('bmi-instructions');
+        const bmiResult = document.getElementById('bmi-result');
+        
+        if (bmiValueElement) bmiValueElement.textContent = bmi;
+        if (bmiCategoryElement) {
+            bmiCategoryElement.textContent = category;
+            bmiCategoryElement.className = `fw-bold ${categoryClass}`;
+        }
+        
+        // Hide instructions and show result with Next button
+        if (bmiInstructions) bmiInstructions.classList.add('d-none');
+        if (bmiResult) bmiResult.classList.remove('d-none');
+        
+        showAlert(`BMI calculated successfully! Your BMI is ${bmi} (${category}). Click "Next Step" to continue.`, 'success');
+    }
+    
+    // Function to handle step transitions and data flow
+    function handleStepTransition(fromStep, toStep) {
+        if (fromStep === 1 && toStep === 2) {
+            // Transfer BMI data from Step 1 to Step 2
+            const height = document.getElementById('height').value;
+            const weight = document.getElementById('weight').value;
+            
+            console.log(`Transitioning from BMI (${userBMI}) to Profile step`);
+            
+            // Show BMI information in Step 2
+            if (userBMI && userBMICategory) {
+                const step2BMIInfo = document.getElementById('step2-bmi-info');
+                const step2BMIDisplay = document.getElementById('step2-bmi-display');
+                
+                if (step2BMIInfo && step2BMIDisplay) {
+                    step2BMIDisplay.innerHTML = `
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <strong>BMI: ${userBMI}</strong>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="badge bg-primary">${userBMICategory}</span>
+                            </div>
+                        </div>
+                        <small class="text-muted">Height: ${height}cm, Weight: ${weight}kg</small>
+                    `;
+                    step2BMIInfo.classList.remove('d-none');
+                }
+            }
+            
+            showAlert('Great! Now let\'s complete your profile information.', 'info');
+        }
+    }
+    
+    // Initialize page state
+    function initializePage() {
+        // Ensure Step 1 shows instructions initially
+        const bmiInstructions = document.getElementById('bmi-instructions');
+        const bmiResult = document.getElementById('bmi-result');
+        
+        if (bmiInstructions) bmiInstructions.classList.remove('d-none');
+        if (bmiResult) bmiResult.classList.add('d-none');
+        
+        // Add event listeners to height and weight inputs to reset BMI when changed
+        const heightInput = document.getElementById('height');
+        const weightInput = document.getElementById('weight');
+        
+        if (heightInput) {
+            heightInput.addEventListener('input', resetBMICalculation);
+        }
+        if (weightInput) {
+            weightInput.addEventListener('input', resetBMICalculation);
+        }
+        
+        // Show first step
+        showStep(1);
+    }
+    
+    // Function to reset BMI calculation when inputs change
+    function resetBMICalculation() {
+        userBMI = null;
+        userBMICategory = '';
+        
+        const bmiInstructions = document.getElementById('bmi-instructions');
+        const bmiResult = document.getElementById('bmi-result');
+        
+        if (bmiInstructions) bmiInstructions.classList.remove('d-none');
+        if (bmiResult) bmiResult.classList.add('d-none');
+    }
+    
+    // Run initialization when page loads
+    document.addEventListener('DOMContentLoaded', initializePage);
+    
+    // API call utility function
+    async function makeAPICall(url, data, method = 'GET') {
+        try {
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            };
+            
+            if (method !== 'GET' && data) {
+                options.body = JSON.stringify(data);
+            }
+            
+            const response = await fetch(url, options);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('API call failed:', error);
+            throw error;
+        }
+    }
+    
+    // Show alert function
+    function showAlert(message, type = 'info') {
+        // Create alert element
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        // Insert at the top of the container
+        const container = document.querySelector('.container');
+        container.insertBefore(alertDiv, container.firstChild);
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+    
+    function updateStepIndicators() {
+        document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
+            const stepNumber = index + 1;
+            indicator.classList.remove('active', 'completed');
+            
+            if (stepNumber < currentStep) {
+                indicator.classList.add('completed');
+            } else if (stepNumber === currentStep) {
+                indicator.classList.add('active');
+            }
+        });
+    }
+    
+    function showStep(step) {
+        // Hide all step contents
+        document.querySelectorAll('.step-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        
+        // Show current step
+        const currentStepElement = document.querySelector(`[data-step="${step}"]`);
+        if (currentStepElement) {
+            currentStepElement.classList.add('active');
+        }
+        
+        // Update navigation buttons
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const nextBtnText = document.getElementById('next-btn-text');
+        const currentStepNumber = document.getElementById('current-step-number');
+        
+        if (prevBtn) {
+            prevBtn.style.display = step > 1 ? 'block' : 'none';
+        }
+        
+        if (nextBtn) {
+            nextBtn.style.display = step < totalSteps ? 'block' : 'none';
+        }
+        
+        if (nextBtnText) {
+            nextBtnText.textContent = step === totalSteps ? 'Generate Plan' : 'Next';
+        }
+        
+        if (currentStepNumber) {
+            currentStepNumber.textContent = step;
+        }
+        
+        // Update step indicators
+        updateStepIndicators();
+        
+        // Scroll to top of form
+        setTimeout(() => {
+            document.querySelector('.step-content.active').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }, 100);
+    }
+    
+    function nextStep() {
+        if (validateCurrentStep()) {
+            if (currentStep < totalSteps) {
+                const fromStep = currentStep;
+                currentStep++;
+                
+                // Handle step transition
+                handleStepTransition(fromStep, currentStep);
+                
+                showStep(currentStep);
+            } else {
+                // We're on the last step, submit the form
+                document.getElementById('meal-planner-form').dispatchEvent(new Event('submit'));
+            }
+        }
+    }
+    
+    function previousStep() {
+        if (currentStep > 1) {
+            currentStep--;
+            showStep(currentStep);
+        }
+    }
+    
+    function validateCurrentStep() {
+        // Special validation for Step 1 (BMI Calculator)
+        if (currentStep === 1) {
+            if (!userBMI) {
+                showAlert('Please calculate your BMI before proceeding to the next step.', 'warning');
+                return false;
+            }
+            return true;
+        }
+        
+        const currentStepElement = document.querySelector(`[data-step="${currentStep}"]`);
+        const requiredFields = currentStepElement.querySelectorAll('[required]');
+        let isValid = true;
+        let firstInvalidField = null;
+        
+        // Clear previous error styles
+        requiredFields.forEach(field => {
+            field.classList.remove('is-invalid');
+        });
+        
+        for (let field of requiredFields) {
+            if (!field.value || field.value.trim() === '') {
+                field.classList.add('is-invalid');
+                if (!firstInvalidField) {
+                    firstInvalidField = field;
+                }
+                isValid = false;
+            }
+        }
+        
+        if (!isValid && firstInvalidField) {
+            firstInvalidField.focus();
+            firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Get field label
+            const label = firstInvalidField.closest('.col-md-6, .col-md-4, .col-12')?.querySelector('label');
+            const fieldName = label ? label.textContent.replace('*', '').trim() : 'This field';
+            
+            showAlert(`Please fill in the "${fieldName}" field`, 'warning');
+        }
+        
+        return isValid;
+    }
+    
+    function collectFormData() {
+        const formData = {};
+        
+        // Basic profile data
+        formData.name = document.getElementById('name').value;
+        formData.email = document.getElementById('email').value;
+        formData.age = parseInt(document.getElementById('age').value);
+        formData.weight = parseFloat(document.getElementById('weight').value);
+        formData.height = parseInt(document.getElementById('height').value);
+        formData.activity_level = document.getElementById('activity_level').value;
+        
+        // Dietary preferences
+        formData.dietary_preferences = [];
+        document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+            if (checkbox.value !== 'on') {
+                formData.dietary_preferences.push(checkbox.value);
+            }
+        });
+        
+        formData.cuisine_preference = document.getElementById('cuisine_preference').value;
+        formData.allergies = document.getElementById('allergies').value;
+        
+        // Health goals
+        formData.health_goals = [];
+        document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+            if (['weight_loss', 'weight_gain', 'muscle_building', 'maintenance', 'energy_boost', 'heart_health'].includes(checkbox.value)) {
+                formData.health_goals.push(checkbox.value);
+            }
+        });
+        
+        formData.target_calories = document.getElementById('target_calories').value ? parseInt(document.getElementById('target_calories').value) : null;
+        formData.meal_frequency = parseInt(document.getElementById('meal_frequency').value);
+        
+        // Budget and plan
+        formData.budget = parseFloat(document.getElementById('budget').value);
+        formData.days = parseInt(document.getElementById('days').value);
+        formData.cooking_time = document.getElementById('cooking_time').value;
+        formData.special_requests = document.getElementById('special_requests').value;
+        
+        return formData;
+    }
+    
+    async function calculateCalories() {
+        const age = parseInt(document.getElementById('age').value);
+        const weight = parseFloat(document.getElementById('weight').value);
+        const height = parseInt(document.getElementById('height').value);
+        const gender = document.getElementById('gender').value;
+        const activity_level = document.getElementById('activity_level').value;
+        
+        if (!age || !weight || !height || !gender || !activity_level) {
+            showAlert('Please fill in your profile information first', 'warning');
+            return;
+        }
+        
+        try {
+            const response = await makeAPICall('/api/calculate-calories', {
+                age, weight, height, gender, activity_level
+            }, 'POST');
+            
+            if (response.status === 'success') {
+                document.getElementById('calorie-result').innerHTML = `
+                    <div class="alert alert-info mb-0">
+                        <strong>Recommended Daily Calories: ${response.daily_calories}</strong><br>
+                        <small>BMR: ${response.bmr} calories</small>
+                    </div>
+                `;
+                
+                // Auto-fill target calories if not set
+                const targetCaloriesField = document.getElementById('target_calories');
+                if (targetCaloriesField && !targetCaloriesField.value) {
+                    targetCaloriesField.value = response.daily_calories;
+                }
+            }
+        } catch (error) {
+            showAlert('Error calculating calories: ' + error.message, 'danger');
+        }
+    }
+    
+    // Form submission
+    document.getElementById('meal-planner-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if (!validateCurrentStep()) {
+            return;
+        }
+        
+        const formData = collectFormData();
+        
+        try {
+            showLoading('generate-loading');
+            document.getElementById('generate-btn').disabled = true;
+            
+            // Save profile first
+            await makeAPICall('/api/save-profile', formData, 'POST');
+            
+            // Generate meal plan
+            const response = await makeAPICall('/api/generate-meal-plan', formData, 'POST');
+            
+            if (response.status === 'success') {
+                displayResults(response);
+                document.getElementById('results-section').style.display = 'block';
+                document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+            }
+            
+        } catch (error) {
+            showAlert('Error generating meal plan: ' + error.message, 'danger');
+        } finally {
+            hideLoading('generate-loading');
+            document.getElementById('generate-btn').disabled = false;
+        }
+    });
+    
+    function displayResults(response) {
+        const resultsContainer = document.getElementById('meal-plan-results');
+        
+        // Create results HTML
+        const resultsHTML = `
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-calendar-week me-2"></i>Your Meal Plan</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="meal-plan-content">
+                                ${formatMealPlan(response.meal_plan)}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-utensils me-2"></i>Recipe Suggestions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="recipe-suggestions">
+                                ${formatRecipeSuggestions(response.recipe_suggestions)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-shopping-cart me-2"></i>Grocery List</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="grocery-list">
+                                ${formatGroceryList(response.grocery_list)}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-pie me-2"></i>Nutrition Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="nutrition-summary">
+                                ${formatNutritionSummary(response.meal_plan)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        resultsContainer.innerHTML = resultsHTML;
+    }
+    
+    function formatMealPlan(mealPlan) {
+        if (!mealPlan || !mealPlan.days) {
+            return '<p class="text-muted">No meal plan data available</p>';
+        }
+        
+        let html = '';
+        mealPlan.days.forEach((day, index) => {
+            html += `
+                <div class="mb-4">
+                    <h6 class="text-primary">Day ${index + 1}</h6>
+                    <div class="ms-3">
+                        ${Object.entries(day).map(([meal, food]) => 
+                            `<div class="mb-2">
+                                <strong>${meal.charAt(0).toUpperCase() + meal.slice(1)}:</strong> ${food}
+                            </div>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+        });
+        
+        return html || '<p class="text-muted">Meal plan details not available</p>';
+    }
+    
+    function formatRecipeSuggestions(recipes) {
+        if (!recipes || !Array.isArray(recipes)) {
+            return '<p class="text-muted">No recipe suggestions available</p>';
+        }
+        
+        return recipes.map(recipe => `
+            <div class="mb-3 p-3 border rounded">
+                <h6 class="text-primary">${recipe.name || 'Recipe'}</h6>
+                <p class="mb-1"><small class="text-muted">${recipe.description || ''}</small></p>
+                ${recipe.ingredients ? `<small><strong>Key ingredients:</strong> ${recipe.ingredients}</small>` : ''}
+            </div>
+        `).join('');
+    }
+    
+    function formatGroceryList(groceryList) {
+        if (!groceryList || !Array.isArray(groceryList)) {
+            return '<p class="text-muted">No grocery list available</p>';
+        }
+        
+        return `
+            <ul class="list-group list-group-flush">
+                ${groceryList.map(item => `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        ${item.name || item}
+                        ${item.estimated_cost ? `<span class="badge bg-primary rounded-pill">$${item.estimated_cost}</span>` : ''}
+                    </li>
+                `).join('')}
+            </ul>
+        `;
+    }
+    
+    function formatNutritionSummary(mealPlan) {
+        if (!mealPlan) {
+            return '<p class="text-muted">No nutrition data available</p>';
+        }
+        
+        return `
+            <div class="text-center">
+                <div class="mb-3">
+                    <h4 class="text-primary">${mealPlan.daily_calories || 2000}</h4>
+                    <small class="text-muted">Daily Calories</small>
+                </div>
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="border-end">
+                            <strong>${mealPlan.protein || '25%'}</strong>
+                            <br><small>Protein</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="border-end">
+                            <strong>${mealPlan.carbs || '45%'}</strong>
+                            <br><small>Carbs</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <strong>${mealPlan.fats || '30%'}</strong>
+                        <br><small>Fats</small>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Demo data function for quick testing
+    function fillDemoData() {
+        // Fill BMI Calculator first (Step 1)
+        document.getElementById('height').value = '175';
+        document.getElementById('weight').value = '70';
+        
+        // Auto calculate BMI for demo
+        setTimeout(() => {
+            calculateBMI();
+        }, 500);
+        
+        // Step 2 - Profile (these will be filled after BMI calculation)
+        setTimeout(() => {
+            const profileName = document.getElementById('profile-name');
+            const profileEmail = document.getElementById('profile-email');
+            const profileAge = document.getElementById('profile-age');
+            const profileGender = document.getElementById('profile-gender');
+            const profileActivity = document.getElementById('profile-activity');
+            
+            if (profileName) profileName.value = 'John Doe';
+            if (profileEmail) profileEmail.value = 'john.doe@example.com';
+            if (profileAge) profileAge.value = '30';
+            if (profileGender) profileGender.value = 'male';
+            if (profileActivity) profileActivity.value = 'moderate';
+        }, 1000);
+        
+        // Step 2 - Dietary Preferences
+        document.getElementById('cuisine_preference').value = 'mediterranean';
+        document.getElementById('allergies').value = 'None';
+        
+        // Step 3 - Health Goals
+        document.getElementById('target_calories').value = '2200';
+        document.getElementById('meal_frequency').value = '3';
+        
+        // Check some dietary preferences and health goals
+        const vegetarianCheck = document.getElementById('vegetarian');
+        if (vegetarianCheck) vegetarianCheck.checked = true;
+        
+        const weightLossCheck = document.getElementById('weight_loss');
+        if (weightLossCheck) weightLossCheck.checked = true;
+        
+        // Step 4 - Budget & Plan
+        document.getElementById('budget').value = '150';
+        document.getElementById('days').value = '7';
+        document.getElementById('cooking_time').value = 'moderate';
+        document.getElementById('special_requests').value = 'Prefer organic ingredients when possible';
+        
+        // Show success message
+        showAlert('Demo data filled! You can now navigate through the steps.', 'success');
+        
+        // Auto-calculate BMI and calories
+        setTimeout(() => {
+            calculateBMI();
+            calculateCalories();
+        }, 500);
+    }
+    
+    // Initialize the form
+    document.addEventListener('DOMContentLoaded', function() {
+        showStep(1);
+        
+        // Add real-time validation feedback
+        const form = document.getElementById('meal-planner-form');
+        const requiredFields = form.querySelectorAll('[required]');
+        
+        requiredFields.forEach(field => {
+            field.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                }
+            });
+            
+            field.addEventListener('change', function() {
+                if (this.value.trim()) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                }
+            });
+        });
+        
+        // Auto-calculate BMI when weight/height changes
+        const weightField = document.getElementById('weight');
+        const heightField = document.getElementById('height');
+        
+        if (weightField && heightField) {
+            [weightField, heightField].forEach(field => {
+                field.addEventListener('input', function() {
+                    const weight = parseFloat(weightField.value);
+                    const height = parseFloat(heightField.value);
+                    
+                    if (weight && height) {
+                        setTimeout(() => {
+                            calculateBMI();
+                        }, 500);
+                    }
+                });
+            });
+        }
+        
+        // Auto-calculate calories when profile data changes
+        const profileFields = ['age', 'weight', 'height', 'gender', 'activity_level'];
+        profileFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener('change', function() {
+                    // Check if all profile fields are filled
+                    const allFilled = profileFields.every(id => {
+                        const f = document.getElementById(id);
+                        return f && f.value.trim();
+                    });
+                    
+                    if (allFilled) {
+                        setTimeout(() => {
+                            calculateCalories();
+                        }, 500);
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

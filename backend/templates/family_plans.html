@@ -1,0 +1,415 @@
+{% extends "base.html" %}
+
+{% block title %}Family Plans - Smart Grocery + Recipe Planner{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="text-center">
+                <h1 class="display-4 fw-bold text-primary mb-3">👨‍👩‍👧‍👦 Family Meal Planning</h1>
+                <p class="lead text-muted">Create personalized meal plans for your entire family with individual dietary preferences and nutritional requirements</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Family Setup Form -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-users me-2"></i>Family Information</h4>
+                </div>
+                <div class="card-body">
+                    <form id="family-setup-form">
+                        <div id="family-members-container">
+                            <!-- Family members will be added here -->
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col">
+                                <button type="button" class="btn btn-outline-primary" onclick="addFamilyMember()">
+                                    <i class="fas fa-plus me-2"></i>Add Family Member
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Family Preferences -->
+                        <div class="row mb-4">
+                            <div class="col">
+                                <h5 class="mb-3">Family Preferences</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Cooking Style</label>
+                                        <select class="form-select" id="cooking-style">
+                                            <option value="quick">Quick & Easy (30 min or less)</option>
+                                            <option value="traditional">Traditional Home Cooking</option>
+                                            <option value="gourmet">Gourmet & Special Occasions</option>
+                                            <option value="mixed">Mixed Styles</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Budget Range</label>
+                                        <select class="form-select" id="budget-range">
+                                            <option value="budget">Budget-Friendly ($50-100/week)</option>
+                                            <option value="moderate">Moderate ($100-200/week)</option>
+                                            <option value="premium">Premium ($200+/week)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Generate Plan Button -->
+                        <div class="row">
+                            <div class="col text-center">
+                                <button type="button" class="btn btn-primary btn-lg" onclick="generateFamilyPlan()">
+                                    <i class="fas fa-magic me-2"></i>Generate Family Meal Plan
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generated Family Plan Results -->
+    <div id="family-plan-results" class="d-none">
+        <div class="row">
+            <div class="col">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0"><i class="fas fa-calendar-week me-2"></i>Your Family Meal Plan</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="family-plan-content">
+                            <!-- Generated plan will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grocery List -->
+        <div class="row mt-4">
+            <div class="col">
+                <div class="card shadow border-0">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Family Grocery List</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="family-grocery-list">
+                            <!-- Grocery list will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Family Tips Section -->
+    <div class="row mt-5">
+        <div class="col">
+            <div class="text-center mb-4">
+                <h3 class="fw-bold">Family Meal Planning Tips</h3>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="text-primary mb-3">
+                                <i class="fas fa-clock fa-3x"></i>
+                            </div>
+                            <h5>Time Management</h5>
+                            <p class="text-muted">Plan prep-ahead meals and batch cooking to save time during busy weekdays.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="text-success mb-3">
+                                <i class="fas fa-balance-scale fa-3x"></i>
+                            </div>
+                            <h5>Balanced Nutrition</h5>
+                            <p class="text-muted">Ensure each family member gets the right nutrients for their age and activity level.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="text-warning mb-3">
+                                <i class="fas fa-dollar-sign fa-3x"></i>
+                            </div>
+                            <h5>Budget Control</h5>
+                            <p class="text-muted">Plan meals around sales and seasonal ingredients to maximize your grocery budget.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5>Generating Your Family Meal Plan</h5>
+                <p class="text-muted">This may take a few moments...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let familyMemberCount = 0;
+
+function addFamilyMember() {
+    familyMemberCount++;
+    const container = document.getElementById('family-members-container');
+    
+    const memberDiv = document.createElement('div');
+    memberDiv.className = 'family-member-card mb-4';
+    memberDiv.id = `family-member-${familyMemberCount}`;
+    
+    memberDiv.innerHTML = `
+        <div class="card border-light">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Family Member ${familyMemberCount}</h6>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFamilyMember(${familyMemberCount})">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" id="member-name-${familyMemberCount}" placeholder="Enter name">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Age</label>
+                        <input type="number" class="form-control" id="member-age-${familyMemberCount}" placeholder="Age" min="1" max="100">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Gender</label>
+                        <select class="form-select" id="member-gender-${familyMemberCount}">
+                            <option value="">Select</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Activity Level</label>
+                        <select class="form-select" id="member-activity-${familyMemberCount}">
+                            <option value="sedentary">Sedentary</option>
+                            <option value="light">Lightly Active</option>
+                            <option value="moderate">Moderately Active</option>
+                            <option value="very">Very Active</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Dietary Restrictions</label>
+                        <input type="text" class="form-control" id="member-restrictions-${familyMemberCount}" placeholder="e.g., vegetarian, gluten-free">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Food Preferences/Dislikes</label>
+                        <textarea class="form-control" id="member-preferences-${familyMemberCount}" rows="2" placeholder="e.g., loves pasta, dislikes seafood"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.appendChild(memberDiv);
+}
+
+function removeFamilyMember(memberId) {
+    const memberDiv = document.getElementById(`family-member-${memberId}`);
+    if (memberDiv) {
+        memberDiv.remove();
+    }
+}
+
+function generateFamilyPlan() {
+    // Collect family member data
+    const familyMembers = [];
+    const memberCards = document.querySelectorAll('.family-member-card');
+    
+    if (memberCards.length === 0) {
+        alert('Please add at least one family member.');
+        return;
+    }
+    
+    memberCards.forEach((card, index) => {
+        const memberId = card.id.split('-')[2];
+        const member = {
+            name: document.getElementById(`member-name-${memberId}`).value,
+            age: parseInt(document.getElementById(`member-age-${memberId}`).value),
+            gender: document.getElementById(`member-gender-${memberId}`).value,
+            activity_level: document.getElementById(`member-activity-${memberId}`).value,
+            dietary_restrictions: document.getElementById(`member-restrictions-${memberId}`).value,
+            preferences: document.getElementById(`member-preferences-${memberId}`).value
+        };
+        
+        if (member.name && member.age) {
+            familyMembers.push(member);
+        }
+    });
+    
+    if (familyMembers.length === 0) {
+        alert('Please fill in at least one complete family member profile.');
+        return;
+    }
+    
+    // Collect preferences
+    const preferences = {
+        cooking_style: document.getElementById('cooking-style').value,
+        budget_range: document.getElementById('budget-range').value
+    };
+    
+    // Show loading modal
+    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    loadingModal.show();
+    
+    // Make API call
+    fetch('/api/generate-family-plan', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            family_members: familyMembers,
+            preferences: preferences
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        loadingModal.hide();
+        
+        if (data.status === 'success') {
+            displayFamilyPlan(data.family_plan);
+        } else {
+            alert('Error generating family plan: ' + data.message);
+        }
+    })
+    .catch(error => {
+        loadingModal.hide();
+        alert('Error generating family plan: ' + error.message);
+        console.error('Error:', error);
+    });
+}
+
+function displayFamilyPlan(familyPlan) {
+    // Display meal plan
+    const planContent = document.getElementById('family-plan-content');
+    planContent.innerHTML = '';
+    
+    const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    
+    daysOfWeek.forEach((day, index) => {
+        const dayPlan = familyPlan.meal_plan[day];
+        const dayCard = document.createElement('div');
+        dayCard.className = 'card mb-3 border-0 shadow-sm';
+        dayCard.innerHTML = `
+            <div class="card-header bg-primary text-white">
+                <h6 class="mb-0">${dayNames[index]}</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6 class="text-muted mb-2">🍳 Breakfast</h6>
+                        <p class="mb-0">${dayPlan.breakfast}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-muted mb-2">🥙 Lunch</h6>
+                        <p class="mb-0">${dayPlan.lunch}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-muted mb-2">🍽️ Dinner</h6>
+                        <p class="mb-0">${dayPlan.dinner}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        planContent.appendChild(dayCard);
+    });
+    
+    // Display grocery list
+    const groceryList = document.getElementById('family-grocery-list');
+    groceryList.innerHTML = '';
+    
+    const groceryItems = familyPlan.grocery_list;
+    const groceryGrid = document.createElement('div');
+    groceryGrid.className = 'row g-2';
+    
+    groceryItems.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'col-md-6 col-lg-4';
+        itemDiv.innerHTML = `
+            <div class="d-flex align-items-center p-2 bg-light rounded">
+                <i class="fas fa-shopping-basket text-info me-2"></i>
+                <span>${item}</span>
+            </div>
+        `;
+        groceryGrid.appendChild(itemDiv);
+    });
+    
+    groceryList.appendChild(groceryGrid);
+    
+    // Show results section
+    document.getElementById('family-plan-results').classList.remove('d-none');
+    document.getElementById('family-plan-results').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Initialize with one family member
+document.addEventListener('DOMContentLoaded', function() {
+    addFamilyMember();
+});
+</script>
+
+<style>
+.family-member-card {
+    animation: fadeInUp 0.3s ease-in;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    border-radius: 15px;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease;
+}
+
+.modal-content {
+    border-radius: 15px;
+    border: none;
+}
+</style>
+{% endblock %}

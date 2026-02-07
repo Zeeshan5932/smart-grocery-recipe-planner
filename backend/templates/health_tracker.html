@@ -1,0 +1,410 @@
+{% extends "base.html" %}
+
+{% block title %}Health Tracker - Smart Grocery + Recipe Planner{% endblock %}
+
+{% block content %}
+<div class="health-tracker-bg" style="margin: 0; padding: 2rem 0;">
+    <div class="container">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-white floating">
+                <i class="fas fa-heartbeat me-3"></i>
+                Health Tracker
+            </h1>
+            <p class="lead text-white opacity-75">Monitor your health metrics and get personalized recommendations</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="row g-4">
+                <!-- Health Information Panel -->
+                <div class="col-lg-6">
+                    <div class="card glass">
+                        <div class="card-header">
+                            <h5><i class="fas fa-user-md me-2"></i>Health Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="health-form">
+                                <!-- Blood Pressure Section -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-tint me-2 text-danger"></i>Blood Pressure
+                                    </label>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" id="bp_systolic" 
+                                                   placeholder="Systolic" min="80" max="200" value="120">
+                                            <small class="text-muted">Top number</small>
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" id="bp_diastolic" 
+                                                   placeholder="Diastolic" min="50" max="120" value="80">
+                                            <small class="text-muted">Bottom number</small>
+                                        </div>
+                                    </div>
+                                    <div id="bp-status" class="mt-2"></div>
+                                </div>
+                                
+                                <!-- Blood Sugar -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-candy-cane me-2 text-warning"></i>Blood Sugar (mg/dL)
+                                    </label>
+                                    <input type="number" class="form-control" id="blood_sugar" 
+                                           placeholder="Blood Sugar Level" min="70" max="400" value="100">
+                                    <div id="sugar-status" class="mt-2"></div>
+                                </div>
+                                
+                                <!-- Weight & BMI -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-weight me-2 text-info"></i>Weight Information
+                                    </label>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" id="weight" 
+                                                   placeholder="Weight (kg)" min="30" max="200" step="0.1" value="70">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" id="height" 
+                                                   placeholder="Height (cm)" min="100" max="250" value="170">
+                                        </div>
+                                    </div>
+                                    <div id="bmi-result" class="mt-2"></div>
+                                </div>
+                                
+                                <!-- Dietary Restrictions -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-leaf me-2 text-success"></i>Dietary Restrictions
+                                    </label>
+                                    <div class="row g-2">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="vegetarian" id="vegetarian">
+                                                <label class="form-check-label" for="vegetarian">Vegetarian</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="vegan" id="vegan">
+                                                <label class="form-check-label" for="vegan">Vegan</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="gluten_free" id="gluten_free">
+                                                <label class="form-check-label" for="gluten_free">Gluten-Free</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="dairy_free" id="dairy_free">
+                                                <label class="form-check-label" for="dairy_free">Dairy-Free</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="low_sodium" id="low_sodium">
+                                                <label class="form-check-label" for="low_sodium">Low-Sodium</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="diabetic_friendly" id="diabetic_friendly">
+                                                <label class="form-check-label" for="diabetic_friendly">Diabetic-Friendly</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="text-center">
+                                    <button type="button" class="btn btn-success me-2" onclick="calculateHealth()">
+                                        <i class="fas fa-calculator me-2"></i>Calculate Health Metrics
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="generateHealthPlan()">
+                                        <i class="fas fa-magic me-2"></i>Generate Health Plan
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results Panel -->
+                <div class="col-lg-6">
+                    <div class="card glass">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-line me-2"></i>Health Analysis</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="health-results">
+                                <div class="text-center py-4">
+                                    <i class="fas fa-heartbeat text-muted floating" style="font-size: 3rem;"></i>
+                                    <h6 class="mt-3 text-muted">Enter your health information</h6>
+                                    <p class="text-muted">Get personalized health recommendations</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Health Recommendations -->
+                            <div id="health-recommendations" style="display: none;">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-lightbulb me-2 text-warning"></i>Health Recommendations
+                                </h6>
+                                <div id="recommendations-content"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Health History -->
+                    <div class="card glass mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-history me-2"></i>Health History</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="health-history">
+                                <p class="text-muted text-center">No health records yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function calculateHealth() {
+        const weight = parseFloat(document.getElementById('weight').value);
+        const height = parseFloat(document.getElementById('height').value);
+        const bpSystolic = parseInt(document.getElementById('bp_systolic').value);
+        const bpDiastolic = parseInt(document.getElementById('bp_diastolic').value);
+        const bloodSugar = parseInt(document.getElementById('blood_sugar').value);
+        
+        if (!weight || !height || !bpSystolic || !bpDiastolic || !bloodSugar) {
+            showAlert('Please fill in all health metrics', 'warning');
+            return;
+        }
+        
+        // Calculate BMI
+        const bmi = weight / ((height / 100) ** 2);
+        let bmiCategory, bmiColor;
+        
+        if (bmi < 18.5) {
+            bmiCategory = 'Underweight';
+            bmiColor = 'info';
+        } else if (bmi < 25) {
+            bmiCategory = 'Normal weight';
+            bmiColor = 'success';
+        } else if (bmi < 30) {
+            bmiCategory = 'Overweight';
+            bmiColor = 'warning';
+        } else {
+            bmiCategory = 'Obese';
+            bmiColor = 'danger';
+        }
+        
+        // Blood Pressure Status
+        let bpCategory, bpColor;
+        if (bpSystolic < 120 && bpDiastolic < 80) {
+            bpCategory = 'Normal';
+            bpColor = 'success';
+        } else if (bpSystolic < 130 && bpDiastolic < 80) {
+            bpCategory = 'Elevated';
+            bpColor = 'warning';
+        } else if (bpSystolic < 140 || bpDiastolic < 90) {
+            bpCategory = 'High (Stage 1)';
+            bpColor = 'warning';
+        } else {
+            bpCategory = 'High (Stage 2)';
+            bpColor = 'danger';
+        }
+        
+        // Blood Sugar Status
+        let sugarCategory, sugarColor;
+        if (bloodSugar < 100) {
+            sugarCategory = 'Normal';
+            sugarColor = 'success';
+        } else if (bloodSugar < 126) {
+            sugarCategory = 'Prediabetes';
+            sugarColor = 'warning';
+        } else {
+            sugarCategory = 'Diabetes Range';
+            sugarColor = 'danger';
+        }
+        
+        // Update UI
+        document.getElementById('bmi-result').innerHTML = `
+            <div class="alert alert-${bmiColor} mb-0">
+                <strong>BMI: ${bmi.toFixed(1)}</strong> - ${bmiCategory}
+            </div>
+        `;
+        
+        document.getElementById('bp-status').innerHTML = `
+            <div class="alert alert-${bpColor} mb-0">
+                <strong>${bpSystolic}/${bpDiastolic}</strong> - ${bpCategory}
+            </div>
+        `;
+        
+        document.getElementById('sugar-status').innerHTML = `
+            <div class="alert alert-${sugarColor} mb-0">
+                <strong>${bloodSugar} mg/dL</strong> - ${sugarCategory}
+            </div>
+        `;
+        
+        // Show health results
+        const resultsHtml = `
+            <div class="row text-center g-3">
+                <div class="col-md-4">
+                    <div class="card border-0 glass">
+                        <div class="card-body">
+                            <i class="fas fa-weight text-${bmiColor}" style="font-size: 2rem;"></i>
+                            <h4 class="mt-2">${bmi.toFixed(1)}</h4>
+                            <small class="text-muted">BMI</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 glass">
+                        <div class="card-body">
+                            <i class="fas fa-tint text-${bpColor}" style="font-size: 2rem;"></i>
+                            <h4 class="mt-2">${bpSystolic}/${bpDiastolic}</h4>
+                            <small class="text-muted">Blood Pressure</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 glass">
+                        <div class="card-body">
+                            <i class="fas fa-candy-cane text-${sugarColor}" style="font-size: 2rem;"></i>
+                            <h4 class="mt-2">${bloodSugar}</h4>
+                            <small class="text-muted">Blood Sugar</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('health-results').innerHTML = resultsHtml;
+        
+        // Generate recommendations
+        generateRecommendations(bmi, bpSystolic, bpDiastolic, bloodSugar);
+    }
+    
+    function generateRecommendations(bmi, bpSystolic, bpDiastolic, bloodSugar) {
+        let recommendations = [];
+        
+        // BMI recommendations
+        if (bmi < 18.5) {
+            recommendations.push({
+                icon: 'fas fa-arrow-up text-info',
+                text: 'Consider increasing caloric intake with healthy foods',
+                type: 'Weight Management'
+            });
+        } else if (bmi > 25) {
+            recommendations.push({
+                icon: 'fas fa-arrow-down text-warning',
+                text: 'Focus on weight loss through diet and exercise',
+                type: 'Weight Management'
+            });
+        }
+        
+        // Blood pressure recommendations
+        if (bpSystolic > 130 || bpDiastolic > 80) {
+            recommendations.push({
+                icon: 'fas fa-heart text-danger',
+                text: 'Reduce sodium intake and increase physical activity',
+                type: 'Blood Pressure'
+            });
+        }
+        
+        // Blood sugar recommendations
+        if (bloodSugar > 100) {
+            recommendations.push({
+                icon: 'fas fa-candy-cane text-warning',
+                text: 'Monitor carbohydrate intake and exercise regularly',
+                type: 'Blood Sugar'
+            });
+        }
+        
+        // General recommendations
+        recommendations.push({
+            icon: 'fas fa-utensils text-success',
+            text: 'Eat a balanced diet rich in fruits and vegetables',
+            type: 'Nutrition'
+        });
+        
+        recommendations.push({
+            icon: 'fas fa-running text-primary',
+            text: 'Aim for 150 minutes of moderate exercise per week',
+            type: 'Exercise'
+        });
+        
+        const recommendationsHtml = recommendations.map(rec => `
+            <div class="d-flex align-items-center mb-3 p-3 glass rounded">
+                <i class="${rec.icon} me-3" style="font-size: 1.5rem;"></i>
+                <div>
+                    <strong>${rec.type}:</strong><br>
+                    <small>${rec.text}</small>
+                </div>
+            </div>
+        `).join('');
+        
+        document.getElementById('recommendations-content').innerHTML = recommendationsHtml;
+        document.getElementById('health-recommendations').style.display = 'block';
+    }
+    
+    async function generateHealthPlan() {
+        const healthData = collectHealthData();
+        
+        try {
+            showAlert('Generating personalized health plan...', 'info');
+            
+            const response = await makeAPICall('/api/generate-meal-plan', healthData, 'POST');
+            
+            if (response.status === 'success') {
+                showAlert('Health plan generated successfully!', 'success');
+                // You can redirect to meal planner or show results here
+                window.location.href = '/meal-planner';
+            }
+        } catch (error) {
+            showAlert('Error generating health plan: ' + error.message, 'danger');
+        }
+    }
+    
+    function collectHealthData() {
+        const dietary_restrictions = [];
+        document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+            dietary_restrictions.push(checkbox.value);
+        });
+        
+        return {
+            weight: parseFloat(document.getElementById('weight').value),
+            height: parseInt(document.getElementById('height').value),
+            bp_systolic: parseInt(document.getElementById('bp_systolic').value),
+            bp_diastolic: parseInt(document.getElementById('bp_diastolic').value),
+            blood_sugar: parseInt(document.getElementById('blood_sugar').value),
+            dietary_restrictions: dietary_restrictions
+        };
+    }
+    
+    // Real-time calculations
+    document.addEventListener('DOMContentLoaded', function() {
+        const healthInputs = ['weight', 'height', 'bp_systolic', 'bp_diastolic', 'blood_sugar'];
+        
+        healthInputs.forEach(inputId => {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.addEventListener('input', function() {
+                    // Auto-calculate after a short delay
+                    clearTimeout(window.healthCalculationTimeout);
+                    window.healthCalculationTimeout = setTimeout(() => {
+                        const allFilled = healthInputs.every(id => {
+                            const field = document.getElementById(id);
+                            return field && field.value;
+                        });
+                        
+                        if (allFilled) {
+                            calculateHealth();
+                        }
+                    }, 1000);
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

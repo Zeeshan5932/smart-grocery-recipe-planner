@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Planner - Smart Grocery + Recipe Planner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="meal-planner.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand animated-brand" href="index.html">
+                <i class="fas fa-utensils me-2"></i>Smart Meal Planner
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="fas fa-home"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="fas fa-calendar-alt"></i> Meal Planner</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#recipes"><i class="fas fa-book"></i> Recipes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#grocery"><i class="fas fa-shopping-cart"></i> Grocery List</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-5 pt-4">
+        <div class="row">
+            <!-- Enhanced form with multi-step process -->
+            <div class="col-lg-9 mx-auto">
+                <div class="meal-planner-wizard">
+                    <!-- Progress Bar -->
+                    <div class="wizard-progress mb-4" data-aos="fade-down">
+                        <div class="progress-container">
+                            <div class="step-indicator active" data-step="1">
+                                <i class="fas fa-heartbeat"></i>
+                                <span>Health</span>
+                            </div>
+                            <div class="step-indicator" data-step="2">
+                                <i class="fas fa-cog"></i>
+                                <span>Preferences</span>
+                            </div>
+                            <div class="step-indicator" data-step="3">
+                                <i class="fas fa-target"></i>
+                                <span>Goals</span>
+                            </div>
+                            <div class="step-indicator" data-step="4">
+                                <i class="fas fa-utensils"></i>
+                                <span>Plan</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Health Information -->
+                    <div class="wizard-step active" id="step1" data-aos="fade-up">
+                        <div class="card shadow-lg border-0">
+                            <div class="card-header bg-gradient-primary text-white text-center">
+                                <h3><i class="fas fa-heartbeat"></i> Your Health Profile</h3>
+                                <p class="mb-0">Let's understand your health needs for personalized recommendations</p>
+                            </div>
+                            <div class="card-body p-5">
+                                <!-- Health inputs with enhanced design -->
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="input-group-enhanced">
+                                            <label>Blood Pressure</label>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="floating-input">
+                                                        <input type="number" id="bpSystolic" min="80" max="200" required>
+                                                        <span>Systolic</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="floating-input">
+                                                        <input type="number" id="bpDiastolic" min="50" max="120" required>
+                                                        <span>Diastolic</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group-enhanced">
+                                            <label>Blood Sugar (mg/dL)</label>
+                                            <div class="floating-input">
+                                                <input type="number" id="bloodSugar" min="70" max="400" required>
+                                                <span>Enter value</span>
+                                            </div>
+                                            <div class="health-indicator" id="sugarIndicator"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-4 mt-3">
+                                    <div class="col-md-6">
+                                        <div class="input-group-enhanced">
+                                            <label>Weight (kg)</label>
+                                            <div class="floating-input">
+                                                <input type="number" id="weight" min="30" max="200" step="0.1" required>
+                                                <span>Your weight</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group-enhanced">
+                                            <label>Height (cm)</label>
+                                            <div class="floating-input">
+                                                <input type="number" id="height" min="100" max="250" required>
+                                                <span>Your height</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- BMI Display -->
+                                <div class="bmi-display mt-4" id="bmiDisplay" style="display: none;">
+                                    <div class="bmi-circle">
+                                        <div class="bmi-value" id="bmiValue">0</div>
+                                        <div class="bmi-label">BMI</div>
+                                    </div>
+                                    <div class="bmi-status" id="bmiStatus"></div>
+                                </div>
+
+                                <!-- Dietary Restrictions -->
+                                <div class="dietary-section mt-5">
+                                    <h5 class="section-title">Dietary Preferences</h5>
+                                    <div class="dietary-pills">
+                                        <input type="checkbox" id="vegetarian" class="pill-input">
+                                        <label for="vegetarian" class="pill-label vegetarian">
+                                            <i class="fas fa-leaf"></i> Vegetarian
+                                        </label>
+
+                                        <input type="checkbox" id="vegan" class="pill-input">
+                                        <label for="vegan" class="pill-label vegan">
+                                            <i class="fas fa-seedling"></i> Vegan
+                                        </label>
+
+                                        <input type="checkbox" id="glutenFree" class="pill-input">
+                                        <label for="glutenFree" class="pill-label gluten-free">
+                                            <i class="fas fa-ban"></i> Gluten-Free
+                                        </label>
+
+                                        <input type="checkbox" id="diabetic" class="pill-input">
+                                        <label for="diabetic" class="pill-label diabetic">
+                                            <i class="fas fa-heartbeat"></i> Diabetic-Friendly
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="wizard-navigation mt-4" data-aos="fade-up">
+                        <button type="button" class="btn btn-outline-secondary btn-lg" id="prevBtn" style="visibility: hidden;">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg" id="nextBtn">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Help Button -->
+    <div class="floating-help">
+        <button class="help-btn" data-bs-toggle="modal" data-bs-target="#helpModal">
+            <i class="fas fa-question"></i>
+        </button>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal fade" id="helpModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-question-circle"></i> Need Help?</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="help-content">
+                        <h6>Health Information Tips:</h6>
+                        <ul>
+                            <li>Blood pressure: Normal range is 120/80 mmHg</li>
+                            <li>Blood sugar: Fasting normal is 70-100 mg/dL</li>
+                            <li>BMI: 18.5-24.9 is considered normal weight</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script src="scripts.js"></script>
+    <script src="meal-planner-enhanced.js"></script>
+    
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+    </script>
+</body>
+</html>
+        <input type="number" class="form-control" id="budget" placeholder="Enter budget in USD">
+      </div>
+      <button type="submit" class="btn btn-primary">Generate Meal Plan</button>
+    </form>
+
+    <div id="result" class="mt-5">
+      <h3>Generated Meal Plan:</h3>
+      <p id="meal-plan-output"></p>
+      
+      <h3>Recipe Suggestions:</h3>
+      <p id="recipe-output"></p>
+    </div>
+  </div>
+
+  <script src="scripts.js"></script>
+</body>
+</html>

@@ -1,0 +1,655 @@
+<!-- Enhanced Smart Grocery + Recipe Planner -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <title>Smart Grocery + Recipe Planner</title>
+</head>
+<body>
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="preloader-content">
+      <div class="cooking-animation">
+        <i class="fas fa-utensils"></i>
+      </div>
+      <h4>Preparing Your Kitchen...</h4>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand animated-brand" href="#">
+        <i class="fas fa-utensils me-2"></i>Smart Meal Planner
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="#home"><i class="fas fa-home"></i> Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="meal_planner.html"><i class="fas fa-calendar-alt"></i> Meal Planner</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#recipes"><i class="fas fa-book"></i> Recipes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#grocery"><i class="fas fa-shopping-cart"></i> Grocery List</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#about"><i class="fas fa-info-circle"></i> About</a>
+          </li>
+        </ul>
+        <div class="d-none d-lg-block ms-3">
+          <button class="btn btn-outline-light btn-sm" id="themeToggle">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero-section">
+    <div class="hero-background">
+      <div class="floating-elements">
+        <div class="floating-element"><i class="fas fa-apple-alt"></i></div>
+        <div class="floating-element"><i class="fas fa-carrot"></i></div>
+        <div class="floating-element"><i class="fas fa-fish"></i></div>
+        <div class="floating-element"><i class="fas fa-bread-slice"></i></div>
+        <div class="floating-element"><i class="fas fa-cheese"></i></div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row min-vh-100 align-items-center">
+        <div class="col-lg-6" data-aos="fade-right">
+          <div class="hero-content">
+            <h1 class="hero-title">
+              🍽️ Smart Grocery + 
+              <span class="gradient-text">Recipe Planner</span>
+            </h1>
+            <p class="hero-subtitle">Your AI-powered meal planning assistant for healthy, budget-friendly eating tailored to your unique health profile</p>
+            
+            <div class="hero-stats">
+              <div class="stat-item">
+                <div class="stat-number" data-count="1000">0</div>
+                <div class="stat-label">Recipes Generated</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number" data-count="500">0</div>
+                <div class="stat-label">Happy Users</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number" data-count="50">0</div>
+                <div class="stat-label">Cuisines</div>
+              </div>
+            </div>
+
+            <div class="hero-actions">
+              <a href="meal_planner.html" class="btn btn-primary btn-lg hero-btn">
+                <i class="fas fa-rocket"></i> Start Planning
+              </a>
+              <button class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#demoModal">
+                <i class="fas fa-play"></i> Watch Demo
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-6" data-aos="fade-left">
+          <div class="hero-image">
+            <div class="floating-card card-1">
+              <i class="fas fa-heartbeat text-danger"></i>
+              <span>Health Tracking</span>
+            </div>
+            <div class="floating-card card-2">
+              <i class="fas fa-brain text-info"></i>
+              <span>AI Powered</span>
+            </div>
+            <div class="floating-card card-3">
+              <i class="fas fa-dollar-sign text-success"></i>
+              <span>Budget Friendly</span>
+            </div>
+            <div class="main-illustration">
+              <div class="phone-mockup">
+                <div class="screen">
+                  <div class="app-interface">
+                    <div class="header-bar"></div>
+                    <div class="content-area">
+                      <div class="meal-card"></div>
+                      <div class="meal-card"></div>
+                      <div class="meal-card"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features-section py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center mb-5" data-aos="fade-up">
+          <h2 class="section-title">Why Choose Our Meal Planner?</h2>
+          <p class="section-subtitle">Discover the features that make healthy eating effortless</p>
+        </div>
+      </div>
+      
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+          <div class="feature-card-enhanced">
+            <div class="feature-icon">
+              <i class="fas fa-heartbeat"></i>
+            </div>
+            <h4>Health-Focused</h4>
+            <p>Personalized meal recommendations based on your blood pressure, sugar levels, BMI, and dietary restrictions for optimal health outcomes.</p>
+            <div class="feature-tags">
+              <span class="tag">BMI Tracking</span>
+              <span class="tag">Health Alerts</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+          <div class="feature-card-enhanced">
+            <div class="feature-icon">
+              <i class="fas fa-robot"></i>
+            </div>
+            <h4>AI-Powered Intelligence</h4>
+            <p>Advanced OpenAI integration provides smart recipe suggestions, grocery optimization, and meal variety based on your preferences.</p>
+            <div class="feature-tags">
+              <span class="tag">Smart Recipes</span>
+              <span class="tag">Auto-Generated</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+          <div class="feature-card-enhanced">
+            <div class="feature-icon">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <h4>Budget Optimization</h4>
+            <p>Smart budget management with cost-effective meal planning, seasonal ingredient suggestions, and bulk buying recommendations.</p>
+            <div class="feature-tags">
+              <span class="tag">Cost Tracking</span>
+              <span class="tag">Savings Tips</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+          <div class="feature-card-enhanced">
+            <div class="feature-icon">
+              <i class="fas fa-globe"></i>
+            </div>
+            <h4>Global Cuisines</h4>
+            <p>Explore diverse culinary traditions with authentic recipes from Mediterranean, Asian, Mexican, and many other cuisines worldwide.</p>
+            <div class="feature-tags">
+              <span class="tag">50+ Cuisines</span>
+              <span class="tag">Authentic</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+          <div class="feature-card-enhanced">
+            <div class="feature-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <h4>Time Management</h4>
+            <p>Flexible cooking time preferences from 15-minute quick meals to elaborate 2-hour gourmet preparations for any schedule.</p>
+            <div class="feature-tags">
+              <span class="tag">Quick Meals</span>
+              <span class="tag">Meal Prep</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
+          <div class="feature-card-enhanced">
+            <div class="feature-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h4>Progress Tracking</h4>
+            <p>Monitor your health journey with detailed analytics, meal history, and progress reports to achieve your wellness goals.</p>
+            <div class="feature-tags">
+              <span class="tag">Analytics</span>
+              <span class="tag">Reports</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Planner Section -->
+  <section id="planner" class="quick-planner-section py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <div class="quick-planner-card" data-aos="fade-up">
+            <div class="card-header text-center">
+              <h3><i class="fas fa-magic"></i> Quick Meal Planner</h3>
+              <p>Get instant meal suggestions based on your current needs</p>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="quick-input">
+                    <label><i class="fas fa-weight"></i> Current Weight (kg)</label>
+                    <input type="number" class="form-control" id="quickWeight" placeholder="70">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="quick-input">
+                    <label><i class="fas fa-ruler-vertical"></i> Height (cm)</label>
+                    <input type="number" class="form-control" id="quickHeight" placeholder="170">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="quick-input">
+                    <label><i class="fas fa-dollar-sign"></i> Budget ($)</label>
+                    <input type="number" class="form-control" id="quickBudget" placeholder="100">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="quick-input">
+                    <label><i class="fas fa-utensils"></i> Cuisine</label>
+                    <select class="form-select" id="quickCuisine">
+                      <option value="No Preference">Any Cuisine</option>
+                      <option value="Mediterranean">Mediterranean</option>
+                      <option value="Asian">Asian</option>
+                      <option value="Mexican">Mexican</option>
+                      <option value="Italian">Italian</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="quick-bmi" id="quickBMI" style="display: none;">
+                <div class="bmi-indicator">
+                  <span class="bmi-value" id="quickBMIValue">0</span>
+                  <span class="bmi-label">BMI</span>
+                </div>
+              </div>
+
+              <div class="text-center mt-4">
+                <button class="btn btn-primary btn-lg" id="quickGenerate">
+                  <i class="fas fa-magic"></i> Get Quick Suggestions
+                </button>
+              </div>
+
+              <div id="quickResults" class="quick-results mt-4" style="display: none;">
+                <div class="results-grid">
+                  <div class="result-card">
+                    <h6><i class="fas fa-coffee"></i> Breakfast</h6>
+                    <p id="quickBreakfast">Loading...</p>
+                  </div>
+                  <div class="result-card">
+                    <h6><i class="fas fa-hamburger"></i> Lunch</h6>
+                    <p id="quickLunch">Loading...</p>
+                  </div>
+                  <div class="result-card">
+                    <h6><i class="fas fa-utensils"></i> Dinner</h6>
+                    <p id="quickDinner">Loading...</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section id="testimonials" class="testimonials-section py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center mb-5" data-aos="fade-up">
+          <h2 class="section-title">What Our Users Say</h2>
+          <p class="section-subtitle">Real stories from people who transformed their eating habits</p>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-12">
+          <div class="testimonials-carousel" data-aos="fade-up">
+            <div class="testimonial-card active">
+              <div class="testimonial-content">
+                <div class="stars">★★★★★</div>
+                <p>"This app completely changed how I approach meal planning. The health-focused recommendations helped me manage my diabetes while discovering amazing new recipes!"</p>
+              </div>
+              <div class="testimonial-author">
+                <div class="avatar">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="author-info">
+                  <h6>Sarah Johnson</h6>
+                  <span>Diabetic-friendly meal planning</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="testimonial-card">
+              <div class="testimonial-content">
+                <div class="stars">★★★★★</div>
+                <p>"As a busy parent, this tool saves me hours every week. The budget optimization feature keeps our family fed well without overspending."</p>
+              </div>
+              <div class="testimonial-author">
+                <div class="avatar">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="author-info">
+                  <h6>Mike Chen</h6>
+                  <span>Family meal planning</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="testimonial-card">
+              <div class="testimonial-content">
+                <div class="stars">★★★★★</div>
+                <p>"The variety of cuisines and dietary options is incredible. I've been vegetarian for years and this app introduced me to so many new healthy recipes!"</p>
+              </div>
+              <div class="testimonial-author">
+                <div class="avatar">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="author-info">
+                  <h6>Emma Rodriguez</h6>
+                  <span>Vegetarian lifestyle</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 mx-auto text-center" data-aos="fade-up">
+          <div class="cta-content">
+            <h2>Ready to Transform Your Eating Habits?</h2>
+            <p>Join thousands of users who have improved their health and saved money with smart meal planning</p>
+            <div class="cta-buttons">
+              <a href="meal_planner.html" class="btn btn-primary btn-lg">
+                <i class="fas fa-rocket"></i> Start Your Journey
+              </a>
+              <button class="btn btn-outline-light btn-lg" onclick="scrollToSection('features')">
+                <i class="fas fa-info-circle"></i> Learn More
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer-section py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 mb-4">
+          <div class="footer-brand">
+            <h5><i class="fas fa-utensils"></i> Smart Meal Planner</h5>
+            <p>Empowering healthier lives through intelligent meal planning and nutrition guidance.</p>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-6 mb-4">
+          <h6>Features</h6>
+          <ul class="footer-links">
+            <li><a href="#">Meal Planning</a></li>
+            <li><a href="#">Recipe Generator</a></li>
+            <li><a href="#">Grocery Lists</a></li>
+            <li><a href="#">Health Tracking</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-md-6 mb-4">
+          <h6>Support</h6>
+          <ul class="footer-links">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4 mb-4">
+          <h6>Stay Updated</h6>
+          <p>Get the latest recipes and health tips delivered to your inbox.</p>
+          <div class="newsletter">
+            <input type="email" class="form-control" placeholder="Enter your email">
+            <button class="btn btn-primary">Subscribe</button>
+          </div>
+        </div>
+      </div>
+      <hr class="footer-divider">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <p class="copyright">&copy; 2025 Smart Meal Planner. All rights reserved.</p>
+        </div>
+        <div class="col-md-6 text-end">
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Demo Modal -->
+  <div class="modal fade" id="demoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">App Demo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <div class="demo-placeholder">
+            <i class="fas fa-play-circle fa-5x text-primary mb-3"></i>
+            <h4>Demo Video Coming Soon</h4>
+            <p>Watch how easy it is to create personalized meal plans</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back to Top Button -->
+  <button id="backToTop" class="back-to-top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script src="scripts.js"></script>
+  <script src="enhanced-features.js"></script>
+  
+  <script>
+    // Initialize AOS
+    AOS.init({
+      duration: 800,
+      easing: 'ease-in-out',
+      once: true,
+      offset: 100
+    });
+  </script>
+</body>
+</html>
+
+  <!-- Main Content -->
+  <div class="container my-5" id="planner">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h4><i class="fas fa-user-md"></i> Health Information</h4>
+          </div>
+          <div class="card-body">
+            <form id="planner-form">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="bpSystolic" class="form-label">Systolic BP</label>
+                  <input type="number" class="form-control" id="bpSystolic" placeholder="120" min="80" max="200">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="bpDiastolic" class="form-label">Diastolic BP</label>
+                  <input type="number" class="form-control" id="bpDiastolic" placeholder="80" min="50" max="120">
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="bloodSugar" class="form-label">Blood Sugar (mg/dL)</label>
+                <input type="number" class="form-control" id="bloodSugar" placeholder="100" min="70" max="400">
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="weight" class="form-label">Weight (kg)</label>
+                  <input type="number" class="form-control" id="weight" placeholder="70" min="30" max="200" step="0.1">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="height" class="form-label">Height (cm)</label>
+                  <input type="number" class="form-control" id="height" placeholder="170" min="100" max="250">
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Dietary Restrictions</label>
+                <div class="form-check-group">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="Vegetarian" id="vegetarian">
+                    <label class="form-check-label" for="vegetarian">Vegetarian</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="Vegan" id="vegan">
+                    <label class="form-check-label" for="vegan">Vegan</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="Gluten-Free" id="glutenFree">
+                    <label class="form-check-label" for="glutenFree">Gluten-Free</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="Diabetic-Friendly" id="diabetic">
+                    <label class="form-check-label" for="diabetic">Diabetic-Friendly</label>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="card shadow-sm">
+          <div class="card-header bg-success text-white">
+            <h4><i class="fas fa-cog"></i> Meal Preferences</h4>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="budget" class="form-label">Weekly Budget ($)</label>
+              <input type="number" class="form-control" id="budget" placeholder="100" min="0">
+            </div>
+            
+            <div class="mb-3">
+              <label for="cuisine" class="form-label">Cuisine Preference</label>
+              <select class="form-select" id="cuisine">
+                <option value="No Preference">No Preference</option>
+                <option value="Mediterranean">Mediterranean</option>
+                <option value="Asian">Asian</option>
+                <option value="Mexican">Mexican</option>
+                <option value="Italian">Italian</option>
+                <option value="American">American</option>
+                <option value="Indian">Indian</option>
+              </select>
+            </div>
+            
+            <div class="mb-3">
+              <label for="cookingTime" class="form-label">Max Cooking Time: <span id="timeValue">45</span> minutes</label>
+              <input type="range" class="form-range" id="cookingTime" min="15" max="120" value="45">
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Meal Types</label>
+              <div class="form-check-group">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="Breakfast" id="breakfast" checked>
+                  <label class="form-check-label" for="breakfast">Breakfast</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="Lunch" id="lunch" checked>
+                  <label class="form-check-label" for="lunch">Lunch</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="Dinner" id="dinner" checked>
+                  <label class="form-check-label" for="dinner">Dinner</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="Snacks" id="snacks">
+                  <label class="form-check-label" for="snacks">Snacks</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-primary btn-lg" id="generateBtn">
+        <i class="fas fa-magic"></i> Generate Personalized Meal Plan
+      </button>
+    </div>
+    
+    <!-- Results Section -->
+    <div id="result" class="mt-5"></div>
+    
+    <!-- Loading Spinner -->
+    <div id="loading" class="text-center mt-4" style="display: none;">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Generating your personalized meal plan...</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-4 mt-5">
+    <div class="container">
+      <p>&copy; 2025 Smart Grocery + Recipe Planner. Powered by AI for healthier eating.</p>
+      <div class="social-links">
+        <a href="#" class="text-white me-3"><i class="fab fa-facebook"></i></a>
+        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="scripts.js"></script>
+</body>
+</html>

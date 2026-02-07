@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Meal Planner - Smart Grocery + Recipe Planner{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="main-content">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold text-primary">
+                <i class="fas fa-utensils me-3"></i>
+                AI Meal Planner
+            </h1>
+            <p class="lead text-muted">Create personalized meal plans based on your health goals and preferences</p>
+        </div>
+        
+        <!-- BMI Calculator Only -->
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="glass-card shadow-strong">
+                    <div class="card-body p-4">
+                        <h4 class="card-title mb-4 text-primary text-center">
+                            <i class="fas fa-calculator me-2"></i>Calculate Your BMI
+                        </h4>
+                        <p class="text-muted mb-4 text-center">First, let's calculate your Body Mass Index to better understand your health profile.</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Height (cm)</label>
+                                    <input type="number" class="form-control" id="height" placeholder="170" min="100" max="250" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Weight (kg)</label>
+                                    <input type="number" class="form-control" id="weight" placeholder="70" min="30" max="200" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="calculateBMI()">
+                                <i class="fas fa-calculator me-2"></i>Calculate BMI
+                            </button>
+                        </div>
+                        
+                        <!-- BMI Result -->
+                        <div id="bmi-result" class="alert alert-info d-none">
+                            <div class="text-center">
+                                <h5 class="mb-1">Your BMI: <span id="bmi-value" class="fw-bold"></span></h5>
+                                <p class="mb-3">Category: <span id="bmi-category" class="fw-bold"></span></p>
+                                <button type="button" class="btn btn-success btn-lg" onclick="proceedToMealPlan()">
+                                    Continue to Meal Planning <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Instructions when BMI not calculated -->
+                        <div id="bmi-instructions" class="text-center text-muted">
+                            <p><i class="fas fa-info-circle me-2"></i>Enter your height and weight, then click "Calculate BMI" to proceed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meal Planning Section (Hidden Initially) -->
+        <div id="meal-planning-section" class="row justify-content-center mt-5 d-none">
+            <div class="col-lg-10">
+                <div class="glass-card shadow-strong">
+                    <div class="card-body p-4">
+                        <h4 class="card-title mb-4 text-primary text-center">
+                            <i class="fas fa-cutlery me-2"></i>Personalized Meal Plan
+                        </h4>
+                        
+                        <!-- User Profile Summary -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="alert alert-light">
+                                    <h6 class="mb-2"><i class="fas fa-user me-2"></i>Your Profile</h6>
+                                    <p class="mb-1"><strong>BMI:</strong> <span id="profile-bmi"></span></p>
+                                    <p class="mb-0"><strong>Category:</strong> <span id="profile-category"></span></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-light">
+                                    <h6 class="mb-2"><i class="fas fa-target me-2"></i>Recommended Goal</h6>
+                                    <p class="mb-0"><span id="health-goal"></span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Meal Plan Options -->
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 border-primary">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-sun fa-2x text-warning mb-3"></i>
+                                        <h6 class="card-title">Breakfast</h6>
+                                        <div id="breakfast-suggestions">
+                                            <p class="text-muted">Loading suggestions...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 border-primary">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-sun fa-2x text-orange mb-3"></i>
+                                        <h6 class="card-title">Lunch</h6>
+                                        <div id="lunch-suggestions">
+                                            <p class="text-muted">Loading suggestions...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 border-primary">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-moon fa-2x text-primary mb-3"></i>
+                                        <h6 class="card-title">Dinner</h6>
+                                        <div id="dinner-suggestions">
+                                            <p class="text-muted">Loading suggestions...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Features -->
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="card border-success">
+                                    <div class="card-body">
+                                        <h6 class="card-title"><i class="fas fa-shopping-cart me-2"></i>Shopping List</h6>
+                                        <p class="card-text">Based on your meal plan</p>
+                                        <button class="btn btn-success btn-sm" onclick="generateShoppingList()">
+                                            Generate List
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card border-info">
+                                    <div class="card-body">
+                                        <h6 class="card-title"><i class="fas fa-chart-line me-2"></i>Nutrition Tracker</h6>
+                                        <p class="card-text">Track your daily nutrition</p>
+                                        <button class="btn btn-info btn-sm" onclick="showNutritionTracker()">
+                                            View Tracker
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Back to BMI Button -->
+                        <div class="text-center mt-4">
+                            <button class="btn btn-outline-secondary" onclick="backToBMI()">
+                                <i class="fas fa-arrow-left me-2"></i>Back to BMI Calculator
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/meal-planner.js') }}"></script>
+{% endblock %}
